@@ -24,26 +24,52 @@ Vector Vector::operator + (double d){
 }
 
 
-Vector Vector::operator * (Vector &vec){
+// Vector Vector::operator * (Vector &vec){
+// 	return Vector(x*vec.x, y*vec.y, z*vec.z);
+// }
+
+// Vector Vector::operator + (Vector &vec){
+// 	return Vector(x+vec.x, y+vec.y, z+vec.z);
+// }
+
+// Vector Vector::operator - (Vector &vec){
+// 	return Vector(x-vec.x, y-vec.y, z-vec.z);
+// }
+
+// bool Vector::operator == (Vector &vec){
+// 	return (((*this)-vec).length() == 0);
+// 	// would it be perfectly zero (floating shit)?
+// }
+
+Vector Vector::operator * (Vector vec){
 	return Vector(x*vec.x, y*vec.y, z*vec.z);
 }
 
-Vector Vector::operator + (Vector &vec){
+Vector Vector::operator + (Vector vec){
 	return Vector(x+vec.x, y+vec.y, z+vec.z);
 }
-bool Vector::operator == (Vector &vec){
+
+Vector Vector::operator - (Vector vec){
+	return Vector(x-vec.x, y-vec.y, z-vec.z);
+}
+
+bool Vector::operator == (Vector vec){
 	return (((*this)-vec).length() == 0);
 	// would it be perfectly zero (floating shit)?
 }
 
 
+
 double Vector::length(){
-	return sqrt(dot(*this));
+	return sqrt((*this).lengthSquare());
 }
 double Vector::lengthSquare(){
-	return dot(*this);
+	return (*this).dot(*this);
 }
-double Vector::dot(Vector &vec){
+// double Vector::dot(Vector &vec){
+// 	return x*vec.x + y*vec.y + z*vec.z;
+// }
+double Vector::dot(Vector vec){
 	return x*vec.x + y*vec.y + z*vec.z;
 }
 
@@ -51,4 +77,3 @@ double Vector::dot(Vector &vec){
 void Vector::represent(){
 	cout<<"x: "<<x<<" y: "<<y<<" z: "<<z<<endl;
 }
-

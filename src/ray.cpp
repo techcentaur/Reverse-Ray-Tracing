@@ -11,13 +11,14 @@ Ray::Ray(){
 
 Ray::Ray(Vector o, Vector d){
 	origin = o;
-	if(d.length! = 1){
+	if(d.length != 1){
 		double l = d.length;
 		d.x = d.x/l;
 		d.y = d.y/l;
 		d.z = d.z/l;
 	}
 	direction = d;
+}
 
 void Ray::represent(){
 	cout<<"Origin: "<<origin.represent()<<endl;

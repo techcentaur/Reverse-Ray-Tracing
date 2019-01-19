@@ -1,5 +1,6 @@
-#ifndef VECTOR_H
 #define VECTOR_H
+#ifndef VECTOR_H
+#endif
 
 class Vector{
 
@@ -13,16 +14,21 @@ public:
 	Vector operator * (double);
 	Vector operator + (double);
 	
-	Vector operator * (Vector &vec);
-	Vector operator + (Vector &vec);
-	bool operator == (Vector &vec);
+	// Vector operator * (Vector &vec);
+	// Vector operator + (Vector &vec);
+	// Vector operator - (Vector &vec);
+	// bool operator == (Vector &vec);
+
+	Vector operator * (Vector vec);
+	Vector operator + (Vector vec);
+	Vector operator - (Vector vec);
+	bool operator == (Vector vec);
 
 	double length();
 	double lengthSquare();
-	double dot(Vector &vec);
+	// double dot(Vector &vec);
+	double dot(Vector vec);
 
 	void represent();
 
 };
-
-#endif

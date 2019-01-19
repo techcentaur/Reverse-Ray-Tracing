@@ -4,5 +4,5 @@
 class Plane{
 
 public:
-	double 
+	Vector origin, direction
 }
