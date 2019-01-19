@@ -1,6 +1,5 @@
 #ifndef SPHERE_H
-#define SPHERE_H
-#include <vector> 
+#define SPHERE_H 
 #include "vector.h"
 
 class Sphere{
@@ -12,7 +11,7 @@ public:
 	Sphere();
 	Sphere(double, Vector &vec);
 
-	vector<Vector> intersection(Ray &ray)
+	Vector intersection(Ray &ray);
 	void represent();
 
 };
