@@ -1,6 +1,6 @@
 #include <iostream>
 #include "vector.h"
-
+#include <cmath>
 using namespace std;
 
 Vector::Vector(){
@@ -15,11 +15,30 @@ Vector::Vector(double valx, double valy, double valz){
 	x = valx; y = valy; z = valz;
 }
 
-Vector Vector::operator * (Vector const &vec){
+Vector Vector::operator * (Vector &vec){
 	return Vector(x*vec.x, y*vec.y, z*vec.z);
 }
+Vector Vector::operator - (Vector &vec){
+	return Vector(x-vec.x, y-vec.y, z-vec.z);
+}
+Vector Vector::operator + (Vector &vec){
+	return Vector(x+vec.x, y+vec.y, z+vec.z);
+}
+bool Vector::operator == (Vector &vec){
+	return (((*this)-vec).length() == 0);
+	// would it be perfectly zero (floating shit)?
+}
 
-void Vector::represent() const{
-	cout<<x<<" "<<y<<" "<<z<<endl;
+
+double Vector::length(){
+	return sqrt(dot(*this));
+}
+double Vector::dot(Vector &vec){
+	return x*vec.x + y*vec.y + z*vec.z;
+}
+
+
+void Vector::represent(){
+	cout<<"x: "<<x<<" y: "<<y<<" z: "<<z<<endl;
 }
 
