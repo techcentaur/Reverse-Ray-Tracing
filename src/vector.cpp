@@ -15,12 +15,19 @@ Vector::Vector(double valx, double valy, double valz){
 	x = valx; y = valy; z = valz;
 }
 
+
+Vector Vector::operator * (double d){
+	return Vector(x*d, y*d, z*d);
+}
+Vector Vector::operator + (double d){
+	return Vector(x+d, y+d, z+d);
+}
+
+
 Vector Vector::operator * (Vector &vec){
 	return Vector(x*vec.x, y*vec.y, z*vec.z);
 }
-Vector Vector::operator - (Vector &vec){
-	return Vector(x-vec.x, y-vec.y, z-vec.z);
-}
+
 Vector Vector::operator + (Vector &vec){
 	return Vector(x+vec.x, y+vec.y, z+vec.z);
 }
@@ -32,6 +39,9 @@ bool Vector::operator == (Vector &vec){
 
 double Vector::length(){
 	return sqrt(dot(*this));
+}
+double Vector::lengthSquare(){
+	return dot(*this);
 }
 double Vector::dot(Vector &vec){
 	return x*vec.x + y*vec.y + z*vec.z;
