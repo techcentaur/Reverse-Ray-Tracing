@@ -1,7 +1,9 @@
 #include <iostream>
+#include <cmath>
+
 #include "ray.h"
 #include "vector.h"
-#include <cmath>
+
 using namespace std;
 
 Ray::Ray(){
@@ -9,18 +11,14 @@ Ray::Ray(){
 	Vector direction;
 }
 
-Ray::Ray(Vector o, Vector d){
-	origin = o;
-	if(d.length != 1){
-		double l = d.length;
-		d.x = d.x/l;
-		d.y = d.y/l;
-		d.z = d.z/l;
-	}
-	direction = d;
+Ray::Ray(Vector &vec1, Vector &vec2){
+	this->origin = vec1;
+	double len = vec2.length();
+	if(len != 1) this->direction = Vector(vec2.x/len, vec2.y/len, vec2.z/len);
 }
 
-void Ray::represent(){
-	cout<<"Origin: "<<origin.represent()<<endl;
-	cout<<" Direction: "<<direction.represent()<<endl;
+void Ray::print(){
+	cout<<"Origin: "<<origin.print()<<endl;
+	cout<<"Direction: "<<direction.print()<<endl;
 }
+

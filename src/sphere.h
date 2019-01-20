@@ -11,8 +11,10 @@ public:
 	Sphere();
 	Sphere(double, Vector &vec);
 
-	Vector intersection(Ray &ray);
-	void represent();
+	double getNormal(Vector const &vec);
+	Vector getIntersection(Ray &ray);
+
+	void print();
 
 };
 

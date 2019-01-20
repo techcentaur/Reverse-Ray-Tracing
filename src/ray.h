@@ -1,6 +1,6 @@
 #ifndef RAY_H
 #define RAY_H
-#endif
+
 #include "vector.h"
 
 class Ray{
@@ -9,9 +9,9 @@ public:
 	Vector origin, direction;
 
 	Ray();
-	Ray(Vector, Vector);
+	Ray(Vector &vec1, Vector &vec2);
+	
+	void print();
+};
 
-	double dot(Ray &r);
-
-	void represent();
-}
+#endif

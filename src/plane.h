@@ -4,5 +4,9 @@
 class Plane{
 
 public:
-	Vector origin, direction
+	double distance; //distance from origin
+	Vector normal; //in normalized form
+
+
+
 }
