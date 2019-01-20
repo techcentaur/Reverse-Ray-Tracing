@@ -14,7 +14,15 @@ class Matrix{
 		vector< vector<double> > mat;
 		
 		Matrix();
+		Matrix(Matrix &m);
 		void print();
+		
+
+		Vector transform();
+		Matrix operator * (const Matrix &m);
+
+		Matrix transpose();
+		Matrix inverse();
 };
 
 #endif
