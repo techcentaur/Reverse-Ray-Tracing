@@ -15,7 +15,7 @@ Sphere::Sphere(double r, Vector &vec){
 	center = vec;
 }
 
-Vector intersection(Ray &ray){
+Vector Sphere::intersection(Ray &ray){
 	double A =  ray.direction.lengthSquare();
 	double B = 2*(ray.direction.x*(ray.origin.x - center.x) + ray.direction.y*(ray.origin.y - center.y) + ray.direction.z*(ray.origin.z - center.z));
 	double C = pow((ray.origin.x - center.x), 2) + pow((ray.origin.y - center.y), 2) + pow((ray.origin.z - center.z), 2);
@@ -27,7 +27,7 @@ Vector intersection(Ray &ray){
 	Vector point_1 = ray.origin + ray.direction*tMin;
 }
 
-void Vector::represent(){
+void Sphere::print(){
 	cout<<"Radius: "<<radius<<endl;
-	cout<<"Center: "<<"("<<center.x<<","<<center.y<<","<<center.z<<")"<<endl;
+	cout<<"Center: "<<center.print();
 }

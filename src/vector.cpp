@@ -10,7 +10,6 @@ Vector::Vector(){
 Vector::Vector(double value){
 	x = value; y = value; z = value;
 }
-
 Vector::Vector(double valx, double valy, double valz){
 	x = valx; y = valy; z = valz;
 }
@@ -24,39 +23,36 @@ Vector Vector::operator + (double d){
 }
 
 
-// Vector Vector::operator * (Vector &vec){
-// 	return Vector(x*vec.x, y*vec.y, z*vec.z);
-// }
-
-// Vector Vector::operator + (Vector &vec){
-// 	return Vector(x+vec.x, y+vec.y, z+vec.z);
-// }
-
-// Vector Vector::operator - (Vector &vec){
-// 	return Vector(x-vec.x, y-vec.y, z-vec.z);
-// }
-
-// bool Vector::operator == (Vector &vec){
-// 	return (((*this)-vec).length() == 0);
-// 	// would it be perfectly zero (floating shit)?
-// }
-
-Vector Vector::operator * (Vector vec){
+Vector Vector::operator * (Vector &vec){
 	return Vector(x*vec.x, y*vec.y, z*vec.z);
 }
-
-Vector Vector::operator + (Vector vec){
+Vector Vector::operator + (Vector &vec){
 	return Vector(x+vec.x, y+vec.y, z+vec.z);
 }
-
-Vector Vector::operator - (Vector vec){
+Vector Vector::operator - (Vector &vec){
 	return Vector(x-vec.x, y-vec.y, z-vec.z);
 }
-
-bool Vector::operator == (Vector vec){
+bool Vector::operator == (Vector &vec){
 	return (((*this)-vec).length() == 0);
 	// would it be perfectly zero (floating shit)?
 }
+
+// Vector Vector::operator * (Vector vec){
+// 	return Vector(x*vec.x, y*vec.y, z*vec.z);
+// }
+
+// Vector Vector::operator + (Vector vec){
+// 	return Vector(x+vec.x, y+vec.y, z+vec.z);
+// }
+
+// Vector Vector::operator - (Vector vec){
+// 	return Vector(x-vec.x, y-vec.y, z-vec.z);
+// }
+
+// bool Vector::operator == (Vector vec){
+// 	return (((*this)-vec).length() == 0);
+// 	// would it be perfectly zero (floating shit)?
+// }
 
 
 
@@ -66,14 +62,14 @@ double Vector::length(){
 double Vector::lengthSquare(){
 	return (*this).dot(*this);
 }
-// double Vector::dot(Vector &vec){
-// 	return x*vec.x + y*vec.y + z*vec.z;
-// }
-double Vector::dot(Vector vec){
+double Vector::dot(Vector &vec){
 	return x*vec.x + y*vec.y + z*vec.z;
 }
+// double Vector::dot(Vector vec){
+// 	return x*vec.x + y*vec.y + z*vec.z;
+// }
 
 
-void Vector::represent(){
-	cout<<"x: "<<x<<" y: "<<y<<" z: "<<z<<endl;
+void Vector::print(){
+	cout<<"("<<x<<", "<<y<<", "<<z<<")"<<endl;
 }
