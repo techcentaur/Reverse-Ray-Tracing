@@ -1,6 +1,5 @@
-#define VECTOR_H
 #ifndef VECTOR_H
-#endif
+#define VECTOR_H
 
 class Vector{
 
@@ -13,22 +12,26 @@ public:
 
 	Vector operator * (double);
 	Vector operator + (double);
-	
 	Vector operator * (Vector &vec);
 	Vector operator + (Vector &vec);
 	Vector operator - (Vector &vec);
-	bool operator == (Vector &vec);
+	Vector operator / (Vector &vec);
 
-	// Vector operator * (Vector vec);
-	// Vector operator + (Vector vec);
-	// Vector operator - (Vector vec);
-	// bool operator == (Vector vec);
+	Vector& operator+=(const Vector &vec);
+	Vector& operator*=(const Vector &vec);
+
+	bool operator == (Vector &vec);
 
 	double length();
 	double lengthSquare();
 	double dot(Vector &vec);
-	// double dot(Vector vec);
+	void normalize();
+
+	Vector normalizeIt(Vector &vec);
+	Vector cross(Vector &vec1, Vector &vec2);
 
 	void print();
 
 };
+
+#endif
