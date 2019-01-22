@@ -1,18 +1,22 @@
 #ifndef SPHERE_H
 #define SPHERE_H 
+
+#include <tuple>
 #include "vector.h"
+#include "ray.h"
 
 class Sphere{
 
 public:
-	double radius;
-	Vector center;
+	float radius;
+	Vector3f center;
 
 	Sphere();
-	Sphere(double, Vector &vec);
+	~Sphere();
+	
+	Sphere(float radius, Vector3f &vec);
 
-	double getNormal(Vector const &vec);
-	Vector getIntersection(Ray &ray);
+	tuple<Vector3f, int> getIntersection(Ray3f &ray, float &t);
 
 	void print();
 
