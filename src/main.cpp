@@ -1,30 +1,35 @@
-/* Writing Main file and main function:
-
-I will write the functions calls that will get used
-And then implement the functions afterward
-: Sort of Reverse Engineering*/
+/* Writing Main file and main function */
 
 #include <iostream>
 #include <fstream>
+#include <vector>
+
+#include "color.h"
+// #include "vector.h"
+// #include "ray.h"
 
 using namespace std;
 
 
 void writeImage(){
 	ofstream imageFile;
-	imageFile.open("temp.ppm");
+	imageFile.open("temp6.ppm");
 
-	int nx = 200;
-	int ny = 100;
+	int width = 200;
+	int height = 100;
+
+	vector<Color3f> pixelBuffer(width*height);
 	
-	imageFile<<"P3\n"<<nx<<" "<<ny<<"\n255\n";
-	for (int i=ny-1; i>=0; i--){
-		for(int j=0; j<nx; j++){
-			int r = (int)(255.99 * float(j)/float(nx));
-			int g = (int)(255.99 * float(i)/float(ny));
-			int b = (int)(255.99 * 0.2);
-			imageFile<<r<<" "<<g<<" "<<b<<"\n";
+	// base color for all pixels in the figure
+	for(int i=0; i<height; i++){
+		for(int j=0; j<width; j++){
+			pixelBuffer[j+i*width] = Color3f(float(i)/float(height), float(j)/float(width), 0);
 		}
+	}
+
+	imageFile<<"P3\n"<<width<<" "<<height<<"\n255\n";
+	for(int i=0; i<height*width; ++i){
+			imageFile<<int(pixelBuffer[i].r * 255.99)<<" "<<int(pixelBuffer[i].g * 255.99)<<" "<<int(pixelBuffer[i].b * 255.99)<<"\n";
 	}
 
 	imageFile.close();
