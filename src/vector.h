@@ -1,34 +1,34 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-class Vector{
+class Vector3f{
 
 public:
-	double x, y, z;
+	float x, y, z;
 
-	Vector();
-	Vector(double);
-	Vector(double, double, double);
+	Vector3f();
+	Vector3f(const Vector3f &v);
+	Vector3f(float u, float v, float w);
 
-	Vector operator * (double);
-	Vector operator + (double);
-	Vector operator * (Vector &vec);
-	Vector operator + (Vector &vec);
-	Vector operator - (Vector &vec);
-	Vector operator / (Vector &vec);
+	Vector3f operator * (float d);
+	Vector3f operator + (float d);
+	Vector3f operator * (const Vector3f &vec);
+	Vector3f operator + (const Vector3f &vec);
+	Vector3f operator - (const Vector3f &vec);
+	Vector3f operator / (const Vector3f &vec);
 
-	Vector& operator+=(const Vector &vec);
-	Vector& operator*=(const Vector &vec);
+	Vector3f& operator+=(const Vector3f &vec);
+	Vector3f& operator*=(const Vector3f &vec);
 
-	bool operator == (Vector &vec);
+	bool operator == (const Vector3f &vec);
 
-	double length();
-	double lengthSquare();
-	double dot(Vector &vec);
+	float length();
+	float lengthSquare();
+	float dot(const Vector3f &vec);
 	void normalize();
 
-	Vector normalizeIt(Vector &vec);
-	Vector cross(Vector &vec1, Vector &vec2);
+	Vector3f normalizeIt(Vector3f &vec);
+	Vector3f cross(const Vector3f &vec1, const Vector3f &vec2);
 
 	void print();
 

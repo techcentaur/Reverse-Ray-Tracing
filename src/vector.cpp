@@ -3,86 +3,80 @@
 #include <cmath>
 using namespace std;
 
-Vector::Vector(){
+Vector3f::Vector3f(){
 	x=0; y=0; z=0;
 }
+Vector3f::Vector3f(const Vector3f &v){
+	x = v.x; y=v.y; z=v.z;
+}
+Vector3f::Vector3f(float u, float v, float w){
+	x = u; y = v; z = w;
+}
 
-Vector::Vector(double value){
-	x = value; y = value; z = value;
-}
-Vector::Vector(double valx, double valy, double valz){
-	x = valx; y = valy; z = valz;
-}
 
-
-Vector Vector::operator * (double d){
-	return Vector(x*d, y*d, z*d);
+Vector3f Vector3f::operator * (float d){
+	return Vector3f(x*d, y*d, z*d);
 }
-Vector Vector::operator + (double d){
-	return Vector(x+d, y+d, z+d);
+Vector3f Vector3f::operator + (float d){
+	return Vector3f(x+d, y+d, z+d);
 }
-Vector Vector::operator * (Vector &vec){
-	return Vector(x*vec.x, y*vec.y, z*vec.z);
+Vector3f Vector3f::operator * (const Vector3f &vec){
+	return Vector3f(x*vec.x, y*vec.y, z*vec.z);
 }
-Vector Vector::operator + (Vector &vec){
-	return Vector(x+vec.x, y+vec.y, z+vec.z);
+Vector3f Vector3f::operator + (const Vector3f &vec){
+	return Vector3f(x+vec.x, y+vec.y, z+vec.z);
 }
-Vector Vector::operator - (Vector &vec){
-	return Vector(x-vec.x, y-vec.y, z-vec.z);
+Vector3f Vector3f::operator - (const Vector3f &vec){
+	return Vector3f(x-vec.x, y-vec.y, z-vec.z);
 }
-Vector Vector::operator / (Vector &vec){
+Vector3f Vector3f::operator / (const Vector3f &vec){
 	if (vec.x==0 || vec.y==0 || vec.z==0){
 		//raise divideByZeroError here
 	}
-	return Vector(x/vec.x, y/vec.y, z/vec.z);
+	return Vector3f(x/vec.x, y/vec.y, z/vec.z);
 }
 
-bool Vector::operator == (Vector &vec){
+bool Vector3f::operator == (const Vector3f &vec){
 	return (((*this)-vec).length() == 0);
 }
-Vector& Vector::operator+=(const Vector &vec){
+Vector3f& Vector3f::operator+=(const Vector3f &vec){
 	x += vec.x; y += vec.y; z += vec.z;
 	return *this;
 }
-Vector& Vector::operator*=(const Vector &vec){
-	x += vec.x; y += vec.y; z += vec.z;
+Vector3f& Vector3f::operator*=(const Vector3f &vec){
+	x *= vec.x; y *= vec.y; z *= vec.z;
 	return *this;
 } 
 
-
-double Vector::length(){
+float Vector3f::length(){
 	return sqrt((*this).lengthSquare());
 }
-double Vector::lengthSquare(){
+float Vector3f::lengthSquare(){
 	return (*this).dot(*this);
 }
-double Vector::dot(Vector &vec){
+float Vector3f::dot(const Vector3f &vec){
 	return x*vec.x + y*vec.y + z*vec.z;
 }
 
-Vector Vector::cross(Vector &vec1, Vector &vec2){
-	return Vector((vec1.y * vec2.z - vec1.z * vec2.y),
+Vector3f Vector3f::cross(const Vector3f &vec1, const Vector3f &vec2){
+	return Vector3f((vec1.y * vec2.z - vec1.z * vec2.y),
 		(-(vec1.x * vec2.z - vec1.z * vec2.x)),
 		(vec1.x * vec2.y - vec1.y * vec2.x));
 }
-void Vector::normalize(){
-	double len = (*this).length();
+void Vector3f::normalize(){
+	float len = (*this).length();
 	this->x = x/len;
 	this->y = y/len;
 	this->z = z/len;
 }
 
-Vector Vector::normalizeIt(Vector &vec){
-	double len = vec.length();
+Vector3f Vector3f::normalizeIt(Vector3f &vec){
+	float len = vec.length();
 	vec.x = vec.x/len;
 	vec.y = vec.y/len;
 	vec.z = vec.z/len;
 }
 
-void Vector::print(){
+void Vector3f::print(){
 	cout<<"("<<x<<", "<<y<<", "<<z<<")"<<endl;
-}
-
-int main(){
-
 }
