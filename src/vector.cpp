@@ -74,6 +74,9 @@ void Vector3f::normalize(){
 
 Vector3f Vector3f::normalizeIt(){
 	float len = (*this).length();
+	this->x = x/len;
+	this->y = y/len;
+	this->z = z/len;
 	return *this;
 }
 

@@ -9,12 +9,13 @@ class Color3f{
 public:
 	float r, g, b;
 
-	Color3f() {}
-	Color3f(float r, float g, float b) {this->r = r; this->g = g; this->b = b;}
-	Color3f(Color3f& col){r=col.r; g=col.g; b=col.b;}
+	Color3f();
+	Color3f(float r, float g, float b);
+	Color3f(const Color3f &col);
 
-	Color3f operator * (float f) {r=r*f; g=g*f; b=b*f; return *this;}
-	void print(){cout<<"[*] Color: "<<"("<<r<<", "<<g<<", "<<b<<")"<<endl;}
+	Color3f operator * (float f);	
+
+	void print();
 
 };
 

@@ -16,31 +16,39 @@ Sphere::Sphere(float r, Vector3f &vec, Material &m){
 	radius = r; center = vec; material = m;
 }
 
-tuple<Vector3f, int> Sphere::getIntersection(Ray3f &ray, float &t0){
-	float A =  ray.direction.lengthSquare();
-	float B = ray.direction.dot(ray.origin - center)*2.f;
-	float C = (ray.origin - center).lengthSquare() - radius*radius;
+tuple<Vector3f, bool> Sphere::getIntersection(Ray3f &ray, float &t0){
+	// float A =  ray.direction.lengthSquare();
+	// float B = ray.direction.dot(ray.origin - center)*2.f;
+	// float C = (ray.origin - center).lengthSquare() - radius*radius;
 
-	float discriminant = B*B - 4*A*C;
-	float t1;
+	// float discriminant = B*B - 4*A*C;
+	// float t1;
 
 	Vector3f v(0, 0, 0);
-	return make_tuple(v, discriminant>0);
 
-	if (discriminant < 0) make_tuple(v, -1);
-	else {
-		discriminant = sqrt(discriminant);
-		t0 = ((-1*B) + (-1)*discriminant)/(2*A);
-		t1 = ((-1*B) + discriminant)/(2*A);		
-	}
+	// if (discriminant < 0) return make_tuple(v, false);
+	// discriminant = sqrt(discriminant);
+	// t0 = ((-1*B) + (-1)*discriminant)/(2*A);
+	// t1 = ((-1*B) + discriminant)/(2*A);		
 
-	if(t0 < 0) t0 = t1;
-	if(t0 < 0) return make_tuple(v, -1);
 
-	float tMin = min(t0, t1);	
-	Vector3f point = ray.origin + ray.direction*tMin;
+	// if(t0 < 0) t0 = t1;
+	// if(t0 < 0) return make_tuple(v, false);
 
-	return make_tuple(point, 0);
+	// float tMin = min(t0, t1);	
+	// Vector3f point = ray.origin + ray.direction*tMin;
+
+	Vector3f l = center - ray.origin;
+	float tca = l.dot(ray.direction);
+	float d2 = l.dot(l) - tca*tca;
+	if(d2>radius*radius) return make_tuple(v, false);
+	float thc = sqrtf(radius*radius - d2);
+	t0 = tca-thc;
+	float t1 = tca + thc;
+	if(t0>0) t0 = t1;
+	if(t0<0) return make_tuple(v, false);
+
+	return make_tuple(v, true);
 }
 
 void Sphere::print(){

@@ -16,7 +16,7 @@ public:
 	Sphere();	
 	Sphere(float radius, Vector3f &vec, Material &m);
 
-	tuple<Vector3f, int> getIntersection(Ray3f &ray, float &t);
+	tuple<Vector3f, bool> getIntersection(Ray3f &ray, float &t);
 
 	void print();
 
