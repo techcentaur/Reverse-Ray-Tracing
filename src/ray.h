@@ -15,7 +15,7 @@ public:
 	Ray3f(Vector3f &v1, Vector3f &v2) {origin = v1; direction = v2;}
 
 	// make a function to take t, and return Vector
-	void print(){origin.print(); direction.print();}
+	void print(){cout<<"[*] Ray: "; origin.print(); direction.print();}
 
 };
 
