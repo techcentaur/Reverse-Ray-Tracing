@@ -10,15 +10,11 @@
 using namespace std;
 
 Sphere::Sphere(){
-	radius = 1;
-	Vector3f v(0.f, 0.f, 0.f);
-	center = v;
 }
 
-Sphere::Sphere(float r, Vector3f &vec){
-	radius = r; center = vec;
+Sphere::Sphere(float r, Vector3f &vec, Material &m){
+	radius = r; center = vec; material = m;
 }
-Sphere::~Sphere(){}
 
 tuple<Vector3f, int> Sphere::getIntersection(Ray3f &ray, float &t0){
 	float A =  ray.direction.lengthSquare();
@@ -29,6 +25,7 @@ tuple<Vector3f, int> Sphere::getIntersection(Ray3f &ray, float &t0){
 	float t1;
 
 	Vector3f v(0, 0, 0);
+	return make_tuple(v, discriminant>0);
 
 	if (discriminant < 0) make_tuple(v, -1);
 	else {
@@ -44,4 +41,11 @@ tuple<Vector3f, int> Sphere::getIntersection(Ray3f &ray, float &t0){
 	Vector3f point = ray.origin + ray.direction*tMin;
 
 	return make_tuple(point, 0);
+}
+
+void Sphere::print(){
+	cout<<"[*] Sphere: \n";
+	cout<<"Center: "; center.print();
+	cout<<"Radius: "<<radius<<"\n";
+	cout<<"Material: "; material.print();
 }
