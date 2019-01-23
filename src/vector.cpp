@@ -1,4 +1,4 @@
-#include <iostream>
+ #include <iostream>
 #include "vector.h"
 #include <cmath>
 using namespace std;
@@ -13,7 +13,9 @@ Vector3f::Vector3f(float u, float v, float w){
 	x = u; y = v; z = w;
 }
 
-
+// void Vector3f::operator = (const Vector3f &vec){
+// 	x = vec.x; y=vec.y; z=vec.z;
+// }
 Vector3f Vector3f::operator * (float d){
 	return Vector3f(x*d, y*d, z*d);
 }
@@ -70,13 +72,12 @@ void Vector3f::normalize(){
 	this->z = z/len;
 }
 
-Vector3f Vector3f::normalizeIt(Vector3f &vec){
-	float len = vec.length();
-	vec.x = vec.x/len;
-	vec.y = vec.y/len;
-	vec.z = vec.z/len;
+Vector3f Vector3f::normalizeIt(){
+	float len = (*this).length();
+	return *this;
 }
 
 void Vector3f::print(){
+	cout<<"[*] Vector: ";
 	cout<<"("<<x<<", "<<y<<", "<<z<<")"<<endl;
 }

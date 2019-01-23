@@ -10,6 +10,7 @@ public:
 	Vector3f(const Vector3f &v);
 	Vector3f(float u, float v, float w);
 
+	// Vector3f operator = (const Vector3f &vec);
 	Vector3f operator * (float d);
 	Vector3f operator + (float d);
 	Vector3f operator * (const Vector3f &vec);
@@ -27,7 +28,7 @@ public:
 	float dot(const Vector3f &vec);
 	void normalize();
 
-	Vector3f normalizeIt(Vector3f &vec);
+	Vector3f normalizeIt();
 	Vector3f cross(const Vector3f &vec1, const Vector3f &vec2);
 
 	void print();
