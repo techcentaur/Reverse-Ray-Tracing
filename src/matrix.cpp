@@ -14,7 +14,7 @@ Matrix::Matrix(){
 Matrix::Matrix(Matrix &m){
 	this->mat.assign(4, vector<double>(4, 0));
 
-	for(int i=0; i<4; i++) this->mat[i][j] = 1;
+	for(int i=0; i<4; i++) this->mat[i][i] = 1;
 
 	for(int i=0; i<4; i++){
 		for(int j=0; j<4; j++){
@@ -34,7 +34,7 @@ Matrix Matrix::operator * (const Matrix &m){
 	}
 }
 
-Vector Matrix::transform(Vector &v) {
+Vector3f Matrix::transform() {
 }
 
 

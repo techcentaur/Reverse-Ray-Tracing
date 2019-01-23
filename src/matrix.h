@@ -18,7 +18,7 @@ class Matrix{
 		void print();
 		
 
-		Vector transform();
+		Vector3f transform();
 		Matrix operator * (const Matrix &m);
 
 		Matrix transpose();
