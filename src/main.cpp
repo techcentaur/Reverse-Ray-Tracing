@@ -13,6 +13,7 @@
 #include "vector.h"
 #include "ray.h"
 #include "material.h"
+#include "light.h"
 
 using namespace std;
 
@@ -22,9 +23,9 @@ bool SceneRayCasting(Ray3f &ray, vector<Sphere*> spheresList, Vector3f &iPoint, 
 
 	for(int i=0; i<spheresList.size(); i++){
 		float closetIntersection;
-		tuple<Vector3f, int> tup = spheresList.at(i)->getIntersection(ray, maxDistance);
+		tuple<Vector3f, bool> tup = spheresList.at(i)->getIntersection(ray, closetIntersection);
 		
-		bool temp = (bool)get<1>(tup);
+		bool temp = get<1>(tup);
 		if(temp && closetIntersection < maxDistance){
 			maxDistance = closetIntersection;
 			iPoint = ray.origin + ray.direction*closetIntersection;
@@ -33,24 +34,36 @@ bool SceneRayCasting(Ray3f &ray, vector<Sphere*> spheresList, Vector3f &iPoint, 
 			iMaterial = spheresList.at(i)->material;
 		}
 	}
+	// iMaterial.diffuseColor.print();
 	return maxDistance < 1000;
 }
 
-Color3f RayCasting(Ray3f &ray, vector<Sphere*> &sList){
+Color3f RayCasting(Ray3f &ray, vector<Sphere*> sList, vector<Light*> lSrcList){
 	Vector3f iPoint, nVector;
 	Material iMaterial;
+	// iMaterial.diffuseColor.print();
 	bool temp = SceneRayCasting(ray, sList, iPoint, nVector, iMaterial);
 	if(!temp){
-		Color3f c1(0.2, 0.7, 0.8);
+		Color3f c1(0.0, 0.0, 0.0);
 		return c1; // background: If didn't intersect
 	}
-	return iMaterial.diffuseColor;
+
+	float diffuseLightIntensity = 0;
+	for(int i=0; i<lSrcList.size(); i++){
+		Vector3f lSrcDirection = (lSrcList.at(i)->source - iPoint).normalizeIt();
+		diffuseLightIntensity += lSrcList.at(i)->intensity*max(0.f, lSrcDirection.dot(nVector));
+	}
+	// cout<<(diffuseLightIntensity);
+	// iMaterial.diffuseColor.print();
+	Color3f ret = iMaterial.diffuseColor * diffuseLightIntensity;
+	// ret.print();
+	return ret;
 }
 
 
-void writeImage(vector<Sphere*> spheresList){
+void writeImage(vector<Sphere*> spheresList, vector<Light*> lightSourcesList){
 	ofstream imageFile;
-	imageFile.open("./figures/exp1/seventh.ppm");
+	imageFile.open("./figures/exp1/ninth2.ppm");
 
 	int width = 1024;
 	int height = 768;
@@ -71,7 +84,7 @@ void writeImage(vector<Sphere*> spheresList){
             Vector3f orig(0, 0, 0);
             Ray3f newRay(orig, direction);
             
-			pixelBuffer[j+i*width] = RayCasting(newRay, spheresList);
+			pixelBuffer[j+i*width] = RayCasting(newRay, spheresList, lightSourcesList);
 		}
 	}
 
@@ -105,7 +118,20 @@ int main(){
 	spheresList.push_back(s2);
 	spheresList.push_back(s3);
 
-	writeImage(spheresList);
+	vector<Light*> lightSourcesList;
+
+	Vector3f src1(-50.f, -30.f, -30.f);
+	Vector3f src2(50.f, 30.f, 30.f);
+
+	Light *l1 = new Light(src1, 2);
+	Light *l2 = new Light(src2, 1);
+
+
+	lightSourcesList.push_back(l1);
+	lightSourcesList.push_back(l2);
+
+
+	writeImage(spheresList, lightSourcesList);
 
 	return 0;
 }
