@@ -9,9 +9,10 @@ class Material{
 
 public:
 	Color3f diffuseColor;
-	
+	float specularReflectionExponent;
+
 	Material(){}
-	void fillColor(Color3f& col) { diffuseColor = col; }
+	void fillColor(Color3f& col, float exp) { diffuseColor = col; specularReflectionExponent = exp;}
 	void print(){cout<<"[*] Material: "; diffuseColor.print();}
 };
 
