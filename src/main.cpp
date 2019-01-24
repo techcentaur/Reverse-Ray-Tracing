@@ -49,13 +49,18 @@ Color3f RayCasting(Ray3f &ray, vector<Sphere*> sList, vector<Light*> lSrcList){
 	}
 
 	float diffuseLightIntensity = 0;
+	float specularLightIntensity = 0;
+
 	for(int i=0; i<lSrcList.size(); i++){
 		Vector3f lSrcDirection = (lSrcList.at(i)->source - iPoint).normalizeIt();
 		diffuseLightIntensity += lSrcList.at(i)->intensity*max(0.f, lSrcDirection.dot(nVector));
+		Vector3f reflectionVector = nVector*(2.f*((lSrcDirection*(-1)).dot(nVector))) - lSrcDirection;
+		specularLightIntensity += powf(max(0.f, -reflectionVector.dot(lSrcDirection)), iMaterial.specularReflectionExponent)*lSrcList.at(i)->intensity;
 	}
 	// cout<<(diffuseLightIntensity);
 	// iMaterial.diffuseColor.print();
-	Color3f ret = iMaterial.diffuseColor * diffuseLightIntensity;
+	Color3f support(1.f, 1.f, 1.f);
+	Color3f ret = (iMaterial.diffuseColor * diffuseLightIntensity) + (support * specularLightIntensity);
 	// ret.print();
 	return ret;
 }
@@ -63,7 +68,7 @@ Color3f RayCasting(Ray3f &ray, vector<Sphere*> sList, vector<Light*> lSrcList){
 
 void writeImage(vector<Sphere*> spheresList, vector<Light*> lightSourcesList){
 	ofstream imageFile;
-	imageFile.open("./figures/exp1/ninth2.ppm");
+	imageFile.open("./figures/exp1/tenth.ppm");
 
 	int width = 1024;
 	int height = 768;
@@ -91,6 +96,12 @@ void writeImage(vector<Sphere*> spheresList, vector<Light*> lightSourcesList){
 	// write into ImageFile in ppm format
 	imageFile<<"P3\n"<<width<<" "<<height<<"\n255\n";
 	for(int i=0; i<height*width; ++i){
+			float m = max(pixelBuffer[i].r, max(pixelBuffer[i].g, pixelBuffer[i].b));
+			
+			if(m>1){
+				pixelBuffer[i] = pixelBuffer[i]*(1./m);
+			}
+
 			imageFile<<int(pixelBuffer[i].r * 255.99)<<" "<<int(pixelBuffer[i].g * 255.99)<<" "<<int(pixelBuffer[i].b * 255.99)<<"\n";
 	}
 
@@ -101,9 +112,9 @@ int main(){
 	Color3f c1(0.3, 0.8, 0.7), c2(0.2, 0.9, 0.3), c3(0.5, 0.1, 0.1);
 
 	Material m1, m2, m3;
-	m1.fillColor(c1);
-	m2.fillColor(c2);
-	m3.fillColor(c3);
+	m1.fillColor(c1, 2.f);
+	m2.fillColor(c2, 3.f);
+	m3.fillColor(c3, 5.f);
 
 	vector<Sphere*> spheresList;
 	
@@ -122,13 +133,15 @@ int main(){
 
 	Vector3f src1(-50.f, -30.f, -30.f);
 	Vector3f src2(50.f, 30.f, 30.f);
+	Vector3f src3(30.f, 20.f, 20.f);
 
 	Light *l1 = new Light(src1, 2);
 	Light *l2 = new Light(src2, 1);
-
+	Light *l3 = new Light(src3, 3);
 
 	lightSourcesList.push_back(l1);
 	lightSourcesList.push_back(l2);
+	lightSourcesList.push_back(l3);
 
 
 	writeImage(spheresList, lightSourcesList);
