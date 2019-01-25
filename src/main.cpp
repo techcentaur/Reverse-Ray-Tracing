@@ -44,7 +44,7 @@ Color3f RayCasting(Ray3f &ray, vector<Sphere*> sList, vector<Light*> lSrcList){
 	// iMaterial.diffuseColor.print();
 	bool temp = SceneRayCasting(ray, sList, iPoint, nVector, iMaterial);
 	if(!temp){
-		Color3f c1(0.0, 0.0, 0.0);
+		Color3f c1(0.2, 0.7, 0.7);
 		return c1; // background: If didn't intersect
 	}
 
@@ -54,13 +54,14 @@ Color3f RayCasting(Ray3f &ray, vector<Sphere*> sList, vector<Light*> lSrcList){
 	for(int i=0; i<lSrcList.size(); i++){
 		Vector3f lSrcDirection = (lSrcList.at(i)->source - iPoint).normalizeIt();
 		diffuseLightIntensity += lSrcList.at(i)->intensity*max(0.f, lSrcDirection.dot(nVector));
-		Vector3f reflectionVector = nVector*(2.f*((lSrcDirection*(-1)).dot(nVector))) - lSrcDirection;
-		specularLightIntensity += powf(max(0.f, -reflectionVector.dot(lSrcDirection)), iMaterial.specularReflectionExponent)*lSrcList.at(i)->intensity;
+
+		Vector3f reflectionVector = lSrcDirection*(-1.f) - nVector*(2.f*((lSrcDirection*(-1.f)).dot(nVector)));
+		specularLightIntensity += powf(max(0.f, reflectionVector.dot((iPoint - ray.origin).normalizeIt())), iMaterial.specularReflectionExponent)*lSrcList.at(i)->intensity;
 	}
 	// cout<<(diffuseLightIntensity);
 	// iMaterial.diffuseColor.print();
 	Color3f support(1.f, 1.f, 1.f);
-	Color3f ret = (iMaterial.diffuseColor * diffuseLightIntensity) + (support * specularLightIntensity);
+	Color3f ret = ((iMaterial.diffuseColor * diffuseLightIntensity)*0.8) + ((support * specularLightIntensity) * 0.9);
 	// ret.print();
 	return ret;
 }
@@ -68,7 +69,7 @@ Color3f RayCasting(Ray3f &ray, vector<Sphere*> sList, vector<Light*> lSrcList){
 
 void writeImage(vector<Sphere*> spheresList, vector<Light*> lightSourcesList){
 	ofstream imageFile;
-	imageFile.open("./figures/exp1/tenth.ppm");
+	imageFile.open("./figures/exp1/tenth4.ppm");
 
 	int width = 1024;
 	int height = 768;
@@ -110,34 +111,56 @@ void writeImage(vector<Sphere*> spheresList, vector<Light*> lightSourcesList){
 
 int main(){
 	Color3f c1(0.3, 0.8, 0.7), c2(0.2, 0.9, 0.3), c3(0.5, 0.1, 0.1);
+	Color3f violet(0.6, 0, 0.8), indigo(0.26, 0, 0.56), blue(0, 0, 1);
+	Color3f orange(1, 0.5, 0), red(1, 0, 0);
 
-	Material m1, m2, m3;
-	m1.fillColor(c1, 2.f);
-	m2.fillColor(c2, 3.f);
-	m3.fillColor(c3, 5.f);
+
+	Material m1, m2, m3, mv, mi, mb, mo, mr;
+	m1.fillColor(c1, 20.f);
+	m2.fillColor(c2, 30.f);
+	m3.fillColor(c3, 50.f);
+	mv.fillColor(violet, 20.f);
+	mi.fillColor(indigo, 20.f);
+	mb.fillColor(blue, 20.f);
+	mo.fillColor(orange, 20.f);
+	mr.fillColor(red, 20.f);
 
 	vector<Sphere*> spheresList;
 	
 	Vector3f v1(-3.f, 0.f, -16.f);
 	Vector3f v2(-1.1, -1.5, -12.f), v3(-5, -8, -23.f);
+	Vector3f vv(-1.f, 5.f, -20.f), vi(-1.f, 2.f, -20.f), vb(-1.f, -2.f, -20.f);
+	Vector3f vo(-1.f, -5.f, -20.f), vr(-1.f, -10.f, -20.f);
 	
 	Sphere *s1 = new Sphere(2.f, v1, m1);
 	Sphere *s2 = new Sphere(1.f, v2, m2);
 	Sphere *s3 = new Sphere(3.f, v3, m3);
+	Sphere *sv = new Sphere(1.f, vv, mv);
+	Sphere *si = new Sphere(1.f, vi, mi);
+	Sphere *sb = new Sphere(1.f, vb, mb);
+	Sphere *so = new Sphere(1.f, vo, mo);
+	Sphere *sr = new Sphere(1.f, vr, mr);
+
 
 	spheresList.push_back(s1);
 	spheresList.push_back(s2);
 	spheresList.push_back(s3);
+	spheresList.push_back(sv);
+	spheresList.push_back(si);
+	spheresList.push_back(sb);
+	spheresList.push_back(so);
+	spheresList.push_back(sr);
+
 
 	vector<Light*> lightSourcesList;
 
 	Vector3f src1(-50.f, -30.f, -30.f);
-	Vector3f src2(50.f, 30.f, 30.f);
-	Vector3f src3(30.f, 20.f, 20.f);
+	Vector3f src2(-40.f, -20.f, -10.f);
+	Vector3f src3(20.f, 10.f, 10.f);
 
-	Light *l1 = new Light(src1, 2);
-	Light *l2 = new Light(src2, 1);
-	Light *l3 = new Light(src3, 3);
+	Light *l1 = new Light(src1, 1.2);
+	Light *l2 = new Light(src2, 1.8);
+	Light *l3 = new Light(src3, 1.7);
 
 	lightSourcesList.push_back(l1);
 	lightSourcesList.push_back(l2);
