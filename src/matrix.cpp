@@ -65,20 +65,22 @@ Matrix Matrix::operator * (const Matrix &m){
 
 Vector3f Matrix::toVector3f() {
 	if(mat[0].size() != 1 && mat.size() != 4){throw std::invalid_argument( "matrix is not of size 4*1. Can't be converted to Vector3f" );}
-	return Vector3f(mat[0][0], mat[0][1], mat[2][0]);
+	return Vector3f(mat[0][0], mat[1][0], mat[2][0]);
 }
 
 Matrix Matrix::transpose() {
-	Matrix temp;
-	for(int i=0; i<4; i++){
-		for(int j=0; j<4; j++){
+	Matrix temp(mat[0].size(),mat.size());
+
+	for(int i=0; i<mat.size(); i++){
+		for(int j=0; j<mat[0].size(); j++){
 			temp.mat[i][j] = this->mat[j][i];
 		}
 	}
+	return temp;
 }
 
-Matrix Matrix::inverse(){
-}
+// Matrix Matrix::inverse(){
+// }
 
 void Matrix::print(){
 	for(int i=0; i<mat.size(); i++){

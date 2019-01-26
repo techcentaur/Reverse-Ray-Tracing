@@ -31,6 +31,7 @@ Vector3f Vector3f::operator + (const Vector3f &vec){
 Vector3f Vector3f::operator - (const Vector3f &vec){
 	return Vector3f(x-vec.x, y-vec.y, z-vec.z);
 }
+
 Vector3f Vector3f::operator / (const Vector3f &vec){
 	if (vec.x==0 || vec.y==0 || vec.z==0){
 		//raise divideByZeroError here
@@ -48,7 +49,11 @@ Vector3f& Vector3f::operator+=(const Vector3f &vec){
 Vector3f& Vector3f::operator*=(const Vector3f &vec){
 	x *= vec.x; y *= vec.y; z *= vec.z;
 	return *this;
-} 
+}
+
+Vector3f Vector3f::operator = (const Vector3f &vec){
+	return Vector3f(vec.x, vec.y, vec.z);
+}
 
 float Vector3f::length(){
 	return sqrt((*this).lengthSquare());
