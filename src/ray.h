@@ -1,7 +1,9 @@
 #ifndef RAY_H
 #define RAY_H
 
+#include <iostream>
 #include "vector.h"
+
 using namespace std;
 
 class Ray3f{
