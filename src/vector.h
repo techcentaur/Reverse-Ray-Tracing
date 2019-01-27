@@ -24,6 +24,8 @@ public:
 	bool operator == (const Vector3f &vec);
 
 	float length();
+	float lengthFrom(const Vector3f &vec);
+
 	float lengthSquare();
 	float dot(const Vector3f &vec);
 	void normalize();

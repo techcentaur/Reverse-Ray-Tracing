@@ -53,6 +53,11 @@ Vector3f& Vector3f::operator*=(const Vector3f &vec){
 float Vector3f::length(){
 	return sqrt((*this).lengthSquare());
 }
+
+float Vector3f::lengthFrom(const Vector3f &vec){
+	return sqrt(fabs(pow(this->x - vec.x, 2) + pow(this->y - vec.y, 2) + pow(this->z - vec.z, 2)));
+}
+
 float Vector3f::lengthSquare(){
 	return (*this).dot(*this);
 }
@@ -65,6 +70,7 @@ Vector3f Vector3f::cross(const Vector3f &vec1, const Vector3f &vec2){
 		(-(vec1.x * vec2.z - vec1.z * vec2.x)),
 		(vec1.x * vec2.y - vec1.y * vec2.x));
 }
+
 void Vector3f::normalize(){
 	float len = (*this).length();
 	this->x = x/len;
