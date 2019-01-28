@@ -17,18 +17,23 @@ Plane::Plane(Vector3f &p1, Vector3f &p2, Vector3f &p3, Material &m){
 
 }
 
-bool Plane::getIntersection(Ray3f &ray){
+bool Plane::getIntersection(Ray3f &ray, float &param){
 	float t;
-
-	float denom = normal.dot((ray.direction - ray.origin).normalizeIt());
 	Vector3f intersectPoint;
+
+	float denom = normal.dot(ray.direction);
 	if(denom > 1e-6){
-		float t = ((point - ray.origin).dot(this->normal))/((ray.direction - ray.origin).dot(normal));
-		intersectPoint = ray.origin + (ray.direction - ray.origin)*t;
-		if((ray.origin).lengthFrom(intersectPoint) > (ray.direction).lengthFrom(intersectPoint)){
+		float t = ((point - ray.origin).dot(normal))/((ray.direction).dot(normal));
+		
+		Vector3f intersectPoint = ray.origin + (ray.direction)*param;
+
+		if((ray.origin).lengthFrom(intersectPoint) > (ray.origin + ray.direction).lengthFrom(intersectPoint)){
+			param = t;
 			return true;
 		}
 	}
+
+	param = 0.f;
 	return false;
 }
 
