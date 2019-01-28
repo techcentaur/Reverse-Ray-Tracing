@@ -55,17 +55,27 @@ bool SceneRayCasting(Ray3f &ray, vector<Sphere*> spheresList, Vector3f &iPoint, 
     return maxDistance < 5000;
 }
 
-Color3f RayCasting(Ray3f &ray, vector<Sphere*> sList, vector<Light*> lSrcList, vector <Plane*> planesList){
+Color3f RayCasting(Ray3f &ray, vector<Sphere*> sList, vector<Light*> lSrcList, vector <Plane*> planesList, int depth=0){
 
     Vector3f iPoint, nVector;
     Material iMaterial;
     // iMaterial.diffuseColor.print();
     bool temp = SceneRayCasting(ray, sList, iPoint, nVector, iMaterial, planesList);
 
-    if(!temp){
+    if(!temp || depth > 1){
         Color3f c1(0.2, 0.7, 0.7);
         return c1; // background: If didn't intersect
     }
+
+    // reflected ray recursive function
+    Vector3f reflectionVector = ((nVector*(2.f*((ray.direction).dot(nVector)))) - ray.direction).normalizeIt();
+    Vector3f reflectedPoint;
+    if(reflectionVector.dot(nVector) < 0) reflectedPoint = iPoint - nVector*1e-3;
+    else reflectedPoint = iPoint + nVector*1e-3;
+
+    Ray3f reflectedRay;
+    reflectedRay.createRay(reflectedPoint, reflectionVector, true);
+    Color3f reflectedSurfaceColor = RayCasting(reflectedRay, sList, lSrcList, planesList, depth+1);
 
     float diffuseLightIntensity = 0;
     float specularLightIntensity = 0;
@@ -99,7 +109,7 @@ Color3f RayCasting(Ray3f &ray, vector<Sphere*> sList, vector<Light*> lSrcList, v
     // cout<<(diffuseLightIntensity);
     // iMaterial.diffuseColor.print();
     Color3f support(1.f, 1.f, 1.f);
-    Color3f ret = ((iMaterial.diffuseColor * diffuseLightIntensity)* iMaterial.diffuseReflectionCoefficient) + ((support * specularLightIntensity) * iMaterial.specularReflectionCoefficient);
+    Color3f ret = ((iMaterial.diffuseColor * diffuseLightIntensity)* iMaterial.diffuseReflectionCoefficient) + ((support * specularLightIntensity) * iMaterial.specularReflectionCoefficient) + reflectedSurfaceColor*iMaterial.reflectionCoefficient;
     // ret.print();
 
     return ret;
@@ -108,7 +118,7 @@ Color3f RayCasting(Ray3f &ray, vector<Sphere*> sList, vector<Light*> lSrcList, v
 
 void writeImage(vector<Sphere*> spheresList, vector<Light*> lightSourcesList, vector <Plane*> planesList){
     ofstream imageFile;
-    imageFile.open("./figures/exp1/19-1.ppm");
+    imageFile.open("./figures/exp1/19-2.ppm");
 
     int width = 1024;
     int height = 768;
@@ -153,18 +163,19 @@ void writeImage(vector<Sphere*> spheresList, vector<Light*> lightSourcesList, ve
 int main(){
     Color3f c1(0.3, 0.8, 0.7), c2(0.2, 0.9, 0.3), c3(0.5, 0.1, 0.1);
     Color3f violet(0.6, 0, 0.8), indigo(0.26, 0, 0.56), blue(0, 0, 1);
-    Color3f orange(1, 0.5, 0), white(1, 1, 1);
+    Color3f orange(1, 0.5, 0), white(1.0, 1.0, 1.0);
+    Color3f mirrorColor(1.0, 1.0, 1.0);
 
-
-    Material m1, m2, m3, mv, mi, mb, mo, mr;
-    m1.fillColor(c1, 200.f, 1, 2.1);
-    m2.fillColor(c2, 30.f, 1, 0.8);
-    m3.fillColor(c3, 500.f, 0.3, 2);
-    mv.fillColor(violet, 200.f, 0.1, 2.5);
-    mi.fillColor(indigo, 20.f, 0.2, 0.6);
-    mb.fillColor(blue, 200.f, 0.2, 1.3);
-    mo.fillColor(orange, 20.f, 0.4, 0.9);
-    mr.fillColor(white, 200.f, 1, 1);
+    Material m1, m2, m3, mv, mi, mb, mo, mr, mirror;
+    m1.fillColor(c1, 200.f, 1, 2.1, 0.5);
+    m2.fillColor(c2, 30.f, 1, 0.8, 0.3);
+    m3.fillColor(c3, 50.f, 0.3, 2, 0.1);
+    mv.fillColor(violet, 20.f, 0.1, 2.5, 0.3);
+    mi.fillColor(indigo, 20.f, 0.2, 0.6, 0.2);
+    mb.fillColor(blue, 20.f, 0.2, 1.3, 0.3);
+    mo.fillColor(orange, 20.f, 0.4, 0.9, 0.2);
+    mr.fillColor(white, 20.f, 1, 1, 0.1);
+    mirror.fillColor(mirrorColor, 500.f, 10.0, 0.0, 0.8);
 
     vector<Sphere*> spheresList;
     
@@ -172,8 +183,8 @@ int main(){
     Vector3f v2(-1.1, -1.5, -12.f), v3(-5, -8, -23.f);
     Vector3f vv(-1.f, 5.f, -20.f), vi(-1.f, 2.f, -20.f), vb(-1.f, -2.f, -20.f);
     Vector3f vo(-1.f, -5.f, -20.f), vr(-1.f, -10.f, -20.f);
-    
-    Sphere *s1 = new Sphere(2.f, v1, m1);
+
+    Sphere *s1 = new Sphere(3.f, v1, mirror);
     Sphere *s2 = new Sphere(1.f, v2, m2);
     Sphere *s3 = new Sphere(3.f, v3, m3);
     Sphere *sv = new Sphere(1.f, vv, mv);
