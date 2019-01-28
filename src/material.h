@@ -14,15 +14,17 @@ public:
 	float diffuseReflectionCoefficient;
 	float reflectionCoefficient;
 	float refractionCoefficient;
+	float refractiveIndex;
 
 	Material(){}
-	void fillColor(Color3f& col, float sExp, float sCoeff, float dCoeff, float reflecCoeff=0, float refracCoeff=0) { 
+	void fillColor(Color3f& col, float sExp, float sCoeff, float dCoeff, float reflecCoeff=0, float refracCoeff=0, float rIndex=1) { 
 		diffuseColor = col;
 		specularReflectionExponent = sExp;
 		specularReflectionCoefficient = sCoeff;
 		diffuseReflectionCoefficient = dCoeff;
 		reflectionCoefficient = reflecCoeff;
 		refractionCoefficient = refracCoeff;
+		refractiveIndex = rIndex;
 	}
 	
 	void print(){cout<<"[*] Material: "; diffuseColor.print();}

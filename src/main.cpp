@@ -62,7 +62,7 @@ Color3f RayCasting(Ray3f &ray, vector<Sphere*> sList, vector<Light*> lSrcList, v
     // iMaterial.diffuseColor.print();
     bool temp = SceneRayCasting(ray, sList, iPoint, nVector, iMaterial, planesList);
 
-    if(!temp || depth > 1){
+    if(!temp || depth > 2){
         Color3f c1(0.2, 0.7, 0.7);
         return c1; // background: If didn't intersect
     }
@@ -76,6 +76,22 @@ Color3f RayCasting(Ray3f &ray, vector<Sphere*> sList, vector<Light*> lSrcList, v
     Ray3f reflectedRay;
     reflectedRay.createRay(reflectedPoint, reflectionVector, true);
     Color3f reflectedSurfaceColor = RayCasting(reflectedRay, sList, lSrcList, planesList, depth+1);
+
+    extern int refractiveIndexOfMedium;
+    // refracted ray recursive function
+    float eta = refractiveIndexOfMedium/iMaterial.refractiveIndex;
+    float costheta1 = max(-1.f, min(1.f, ray.direction.dot(nVector)));
+    float sintheat2 = max(-1.f, min(1.f, eta*costheta1));
+
+    Vector3f refractedVector = ((ray.direction)*eta + nVector*(costheta1*eta - sqrtf(1 - (sintheat2*sintheat2)))).normalizeIt();
+
+    Vector3f refractedPoint;
+    if(refractedVector.dot(nVector) < 0) refractedPoint = iPoint - nVector*1e-3 ;
+    else refractedPoint = iPoint + nVector*1e-3;
+
+    Ray3f refractedRay;
+    refractedRay.createRay(refractedPoint, refractedVector, true);
+    Color3f refractedSurfaceColor = RayCasting(refractedRay, sList, lSrcList, planesList, depth+1);
 
     float diffuseLightIntensity = 0;
     float specularLightIntensity = 0;
@@ -109,7 +125,7 @@ Color3f RayCasting(Ray3f &ray, vector<Sphere*> sList, vector<Light*> lSrcList, v
     // cout<<(diffuseLightIntensity);
     // iMaterial.diffuseColor.print();
     Color3f support(1.f, 1.f, 1.f);
-    Color3f ret = ((iMaterial.diffuseColor * diffuseLightIntensity)* iMaterial.diffuseReflectionCoefficient) + ((support * specularLightIntensity) * iMaterial.specularReflectionCoefficient) + reflectedSurfaceColor*iMaterial.reflectionCoefficient;
+    Color3f ret = ((iMaterial.diffuseColor * diffuseLightIntensity)* iMaterial.diffuseReflectionCoefficient) + ((support * specularLightIntensity) * iMaterial.specularReflectionCoefficient) + reflectedSurfaceColor*iMaterial.reflectionCoefficient + refractedSurfaceColor*iMaterial.refractionCoefficient;
     // ret.print();
 
     return ret;
@@ -118,7 +134,7 @@ Color3f RayCasting(Ray3f &ray, vector<Sphere*> sList, vector<Light*> lSrcList, v
 
 void writeImage(vector<Sphere*> spheresList, vector<Light*> lightSourcesList, vector <Plane*> planesList){
     ofstream imageFile;
-    imageFile.open("./figures/exp1/19-2.ppm");
+    imageFile.open("./figures/exp1/19-4.ppm");
 
     int width = 1024;
     int height = 768;
@@ -160,14 +176,16 @@ void writeImage(vector<Sphere*> spheresList, vector<Light*> lightSourcesList, ve
     imageFile.close();
 }
 
+int refractiveIndexOfMedium = 1;
+
 int main(){
     Color3f c1(0.3, 0.8, 0.7), c2(0.2, 0.9, 0.3), c3(0.5, 0.1, 0.1);
     Color3f violet(0.6, 0, 0.8), indigo(0.26, 0, 0.56), blue(0, 0, 1);
     Color3f orange(1, 0.5, 0), white(1.0, 1.0, 1.0);
-    Color3f mirrorColor(1.0, 1.0, 1.0);
+    Color3f mirrorColor(1.0, 1.0, 1.0), glassColor(0.6, 0.7, 0.8);
 
-    Material m1, m2, m3, mv, mi, mb, mo, mr, mirror;
-    m1.fillColor(c1, 200.f, 1, 2.1, 0.5);
+    Material m1, m2, m3, mv, mi, mb, mo, mr, mirror, glass;
+    m1.fillColor(c1, 20.f, 1, 0.1, 0.5);
     m2.fillColor(c2, 30.f, 1, 0.8, 0.3);
     m3.fillColor(c3, 50.f, 0.3, 2, 0.1);
     mv.fillColor(violet, 20.f, 0.1, 2.5, 0.3);
@@ -175,7 +193,8 @@ int main(){
     mb.fillColor(blue, 20.f, 0.2, 1.3, 0.3);
     mo.fillColor(orange, 20.f, 0.4, 0.9, 0.2);
     mr.fillColor(white, 20.f, 1, 1, 0.1);
-    mirror.fillColor(mirrorColor, 500.f, 10.0, 0.0, 0.8);
+    mirror.fillColor(mirrorColor, 1000.f, 10.0, 0.0, 0.8);
+    glass.fillColor(glassColor, 200.f, 0.5, 0.0, 0.1, 0.8, 1.5);
 
     vector<Sphere*> spheresList;
     
@@ -184,12 +203,12 @@ int main(){
     Vector3f vv(-1.f, 5.f, -20.f), vi(-1.f, 2.f, -20.f), vb(-1.f, -2.f, -20.f);
     Vector3f vo(-1.f, -5.f, -20.f), vr(-1.f, -10.f, -20.f);
 
-    Sphere *s1 = new Sphere(3.f, v1, mirror);
-    Sphere *s2 = new Sphere(1.f, v2, m2);
+    Sphere *s1 = new Sphere(3.f, v1, m1);
+    Sphere *s2 = new Sphere(1.f, v2, glass);
     Sphere *s3 = new Sphere(3.f, v3, m3);
     Sphere *sv = new Sphere(1.f, vv, mv);
     Sphere *si = new Sphere(1.f, vi, mi);
-    Sphere *sb = new Sphere(1.f, vb, mb);
+    Sphere *sb = new Sphere(1.f, vb, mirror);
     Sphere *so = new Sphere(1.f, vo, mo);
     Sphere *sr = new Sphere(1.f, vr, mr);
 
