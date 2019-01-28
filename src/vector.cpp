@@ -51,8 +51,11 @@ Vector3f& Vector3f::operator*=(const Vector3f &vec){
 	return *this;
 }
 
-Vector3f Vector3f::operator = (const Vector3f &vec){
-	return Vector3f(vec.x, vec.y, vec.z);
+void Vector3f::operator = (const Vector3f &vec){
+	this->x = vec.x;
+	this->y = vec.y;
+	this->z = vec.z;
+
 }
 
 float Vector3f::length(){
@@ -95,3 +98,10 @@ void Vector3f::print(){
 	cout<<"[*] Vector: ";
 	cout<<"("<<x<<", "<<y<<", "<<z<<")"<<endl;
 }
+
+// int main(){
+// 	Vector3f v1(10, 10, 10);
+// 	Vector3f v2;
+// 	v2 = v1;
+// 	v2.print();
+// }

@@ -38,7 +38,6 @@ tuple<Vector3f, bool> Sphere::getIntersection(Ray3f &ray, float &t0){
 
 	// float tMin = min(t0, t1);	
 	// Vector3f point = ray.origin + ray.direction*tMin;
-
 	Vector3f l = center - ray.origin;
 	float tca = l.dot(ray.direction);
 	float d2 = l.dot(l) - tca*tca;

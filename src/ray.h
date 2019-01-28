@@ -13,14 +13,21 @@ public:
 	Vector3f origin;
 	Vector3f direction;
 
-	Ray3f() {}
-	Ray3f(Vector3f &v1, Vector3f &v2) {origin = v1; direction = (v2 - v1).normalizeIt();}
-	void Ray3fWithDirection(Vector3f &v, Vector3f &direc){ origin = v; direction = direc;}
+	Ray3f(){}
+	void createRay(Vector3f &v1, Vector3f &v2, bool isNormalized) {
+		if(!isNormalized){
+			this->origin = v1; this->direction = (v2 - v1).normalizeIt();
+		}
+		else{
+			this->origin = v1; this->direction = v2;
+
+		}
+	}
 
 	// make a function to take t, and return Vector
 	void print(){cout<<"[*] Ray: \n";
-				cout<<"Origin: "; origin.print();
-				cout<<"Direction: "; direction.print();}
+				cout<<"Origin: "; this->origin.print();
+				cout<<"Direction: "; this->direction.print();}
 };
 
 #endif
