@@ -20,186 +20,204 @@ using namespace std;
 
 
 bool SceneRayCasting(Ray3f &ray, vector<Sphere*> spheresList, Vector3f &iPoint, Vector3f &nVector, Material &iMaterial, vector <Plane*> planesList){
-	float maxDistance = numeric_limits<float>::max();
+    float maxDistance = numeric_limits<float>::max();
 
-	for(int i=0; i<spheresList.size(); i++){
-		float closestIntersection;
-		
-		tuple<Vector3f, bool> tup = spheresList.at(i)->getIntersection(ray, closestIntersection);
-		bool temp = get<1>(tup);
-		
-		if(temp && closestIntersection < maxDistance){
-			maxDistance = closestIntersection;
-			iPoint = ray.origin + ray.direction*closestIntersection;
+    float closestIntersection;
+    for(int i=0; i<spheresList.size(); i++){
+        
+        tuple<Vector3f, bool> tup = spheresList.at(i)->getIntersection(ray, closestIntersection);
+        bool temp = get<1>(tup);
 
-			nVector = (iPoint - spheresList.at(i)->center).normalizeIt();
-			iMaterial = spheresList.at(i)->material;
-		}
-	}
+        if(temp && closestIntersection < maxDistance){
+            maxDistance = closestIntersection;
+            iPoint = ray.origin + ray.direction*closestIntersection;
 
-	// float closestDist = maxDistance;
-	// float closestDist = numeric_limits<float>::max();
+            nVector = (iPoint - spheresList.at(i)->center).normalizeIt();
+            iMaterial = spheresList.at(i)->material;
+        }
+    }
 
-	// for(int i=0; i<planesList.size(); i++){
-	// 	bool didIntersect = planesList.at(i)->getIntersection(ray);
+    // float maxDist2 = numeric_limits<float>::max();
 
-	// 	tuple<float, Vector3f> tup1 = planesList.at(i)->distanceAlongRay(ray);
+    // for(int i=0; i<planesList.size(); i++){
+    //      float param;
+    //      bool didIntersect = planesList.at(i)->getIntersection(ray, param);
+    //      cout<<didIntersect;
+    //      Vector3f intersectPoint = ray.origin + (ray.direction)*param;
+    //      if(didIntersect && param < maxDist2 && param < maxDistance && fabs(intersectPoint.z) < 100 && fabs(intersectPoint.y) < 30){
+    //          maxDist2 = param;
+    //          iPoint = intersectPoint;
+    //          nVector = planesList.at(i)->normal;
+    //          iMaterial = planesList.at(i)->material;
+    //      }
+    // }
 
-	// 	if(didIntersect && get<0>(tup1) < closestDist){
-	// 		closestDist = get<0>(tup1);
-	// 		iPoint = get<1>(tup1);
-
-	// 		nVector = planesList.at(i)->normal;
-	// 		iMaterial = planesList.at(i)->material;
-	// 	}
-	// }
-
-	// iMaterial.diffuseColor.print();
-	// cout<<(bool)(min(closestDist, maxDistance) == closestDist);
-	return maxDistance < 5000;
+    return maxDistance < 5000;
 }
 
 Color3f RayCasting(Ray3f &ray, vector<Sphere*> sList, vector<Light*> lSrcList, vector <Plane*> planesList){
-	Vector3f iPoint, nVector;
-	Material iMaterial;
-	// iMaterial.diffuseColor.print();
-	bool temp = SceneRayCasting(ray, sList, iPoint, nVector, iMaterial, planesList);
-	if(!temp){
-		Color3f c1(0.2, 0.7, 0.7);
-		return c1; // background: If didn't intersect
-	}
 
-	float diffuseLightIntensity = 0;
-	float specularLightIntensity = 0;
+    Vector3f iPoint, nVector;
+    Material iMaterial;
+    // iMaterial.diffuseColor.print();
+    bool temp = SceneRayCasting(ray, sList, iPoint, nVector, iMaterial, planesList);
 
-	for(int i=0; i<lSrcList.size(); i++){
-		Vector3f lSrcDirection = (lSrcList.at(i)->source - iPoint).normalizeIt();
-		diffuseLightIntensity += lSrcList.at(i)->intensity*max(0.f, lSrcDirection.dot(nVector));
+    if(!temp){
+        Color3f c1(0.2, 0.7, 0.7);
+        return c1; // background: If didn't intersect
+    }
 
-		Vector3f reflectionVector = lSrcDirection*(-1.f) - nVector*(2.f*((lSrcDirection*(-1.f)).dot(nVector)));
-		specularLightIntensity += powf(max(0.f, reflectionVector.dot((iPoint - ray.origin).normalizeIt())), iMaterial.specularReflectionExponent)*lSrcList.at(i)->intensity;
-	}
-	// cout<<(diffuseLightIntensity);
-	// iMaterial.diffuseColor.print();
-	Color3f support(1.f, 1.f, 1.f);
-	Color3f ret = ((iMaterial.diffuseColor * diffuseLightIntensity)* iMaterial.diffuseReflectionCoefficient) + ((support * specularLightIntensity) * iMaterial.specularReflectionCoefficient);
-	// ret.print();
-	return ret;
+    float diffuseLightIntensity = 0;
+    float specularLightIntensity = 0;
+
+    for(int i=0; i<lSrcList.size(); i++){
+        Vector3f lSrcDirection = (lSrcList.at(i)->source - iPoint).normalizeIt();
+ 
+        // shadow rays
+        Vector3f shadowPoint;
+        if(lSrcDirection.dot(nVector) < 0) shadowPoint = iPoint - nVector*1e-3;
+        else shadowPoint = iPoint + nVector*1e-3;
+
+        Vector3f shadowIPoint, shadowNVector;
+        Material shadowIMaterial;
+        Ray3f shadowRay;
+        shadowRay.createRay(shadowPoint, lSrcDirection, true);
+
+        if(SceneRayCasting(shadowRay, sList, shadowIPoint, shadowNVector, shadowIMaterial, planesList)){
+            if((shadowIPoint - shadowPoint).length() < (lSrcList.at(i)->source - iPoint).length()){
+                continue;
+            }
+        }
+
+        // diffuse light intensity
+        diffuseLightIntensity += lSrcList.at(i)->intensity*max(0.f, lSrcDirection.dot(nVector));
+
+        // specular light intensity
+        Vector3f reflectionVector = lSrcDirection*(-1.f) - nVector*(2.f*((lSrcDirection*(-1.f)).dot(nVector)));
+        specularLightIntensity += powf(max(0.f, reflectionVector.dot((iPoint - ray.origin).normalizeIt())), iMaterial.specularReflectionExponent)*lSrcList.at(i)->intensity;
+    }
+    // cout<<(diffuseLightIntensity);
+    // iMaterial.diffuseColor.print();
+    Color3f support(1.f, 1.f, 1.f);
+    Color3f ret = ((iMaterial.diffuseColor * diffuseLightIntensity)* iMaterial.diffuseReflectionCoefficient) + ((support * specularLightIntensity) * iMaterial.specularReflectionCoefficient);
+    // ret.print();
+
+    return ret;
 }
 
 
 void writeImage(vector<Sphere*> spheresList, vector<Light*> lightSourcesList, vector <Plane*> planesList){
-	ofstream imageFile;
-	imageFile.open("./figures/exp1/16.ppm");
+    ofstream imageFile;
+    imageFile.open("./figures/exp1/19-1.ppm");
 
-	int width = 1024;
-	int height = 768;
+    int width = 1024;
+    int height = 768;
 
-	int fieldOfView = M_PI/2;
+    int fieldOfView = M_PI/2;
 
-	vector<Color3f> pixelBuffer(width*height);
-	
-	// base color for all pixels
-	for(int i=0; i<height; i++){
-		for(int j=0; j<width; j++){
+    vector<Color3f> pixelBuffer(width*height);
+    
+    // base color for all pixels
+    for(int i=0; i<height; i++){
+        for(int j=0; j<width; j++){
             float x =  (2*(i + 0.5)/(float)width  - 1) * tan(fieldOfView/2.) * width/(float)height;
             float y = -(2*(j + 0.5)/(float)height - 1) * tan(fieldOfView/2.);
-			
-            Vector3f direction(x, y, -1);
-            direction.normalizeIt();
+            
+            Vector3f dir(x, y, -1);
+            dir.normalizeIt();
             
             Vector3f orig(0, 0, 0);
             Ray3f newRay;
-            newRay.Ray3fWithDirection(orig, direction);
+            newRay.createRay(orig, dir, true);
             
-			pixelBuffer[j+i*width] = RayCasting(newRay, spheresList, lightSourcesList, planesList);
-		}
-	}
+            pixelBuffer[j+i*width] = RayCasting(newRay, spheresList, lightSourcesList, planesList);
+        }
+    }
 
-	// write into ImageFile in ppm format
-	imageFile<<"P3\n"<<width<<" "<<height<<"\n255\n";
-	for(int i=0; i<height*width; ++i){
-			float m = max(pixelBuffer[i].r, max(pixelBuffer[i].g, pixelBuffer[i].b));
-			
-			if(m>1){
-				pixelBuffer[i] = pixelBuffer[i]*(1./m);
-			}
+    // write into ImageFile in ppm format
+    imageFile<<"P3\n"<<width<<" "<<height<<"\n255\n";
+    for(int i=0; i<height*width; ++i){
+            float m = max(pixelBuffer[i].r, max(pixelBuffer[i].g, pixelBuffer[i].b));
+            
+            if(m>1){
+                pixelBuffer[i] = pixelBuffer[i]*(1./m);
+            }
 
-			imageFile<<int(pixelBuffer[i].r * 255.99)<<" "<<int(pixelBuffer[i].g * 255.99)<<" "<<int(pixelBuffer[i].b * 255.99)<<"\n";
+            imageFile<<int(pixelBuffer[i].r * 255.99)<<" "<<int(pixelBuffer[i].g * 255.99)<<" "<<int(pixelBuffer[i].b * 255.99)<<"\n";
 
-	}
+    }
 
-	imageFile.close();
+    imageFile.close();
 }
 
 int main(){
-	Color3f c1(0.3, 0.8, 0.7), c2(0.2, 0.9, 0.3), c3(0.5, 0.1, 0.1);
-	Color3f violet(0.6, 0, 0.8), indigo(0.26, 0, 0.56), blue(0, 0, 1);
-	Color3f orange(1, 0.5, 0), red(1, 0, 0);
+    Color3f c1(0.3, 0.8, 0.7), c2(0.2, 0.9, 0.3), c3(0.5, 0.1, 0.1);
+    Color3f violet(0.6, 0, 0.8), indigo(0.26, 0, 0.56), blue(0, 0, 1);
+    Color3f orange(1, 0.5, 0), white(1, 1, 1);
 
 
-	Material m1, m2, m3, mv, mi, mb, mo, mr;
-	m1.fillColor(c1, 20.f, 0.8, 0.9);
-	m2.fillColor(c2, 30.f, 0.5, 0.9);
-	m3.fillColor(c3, 50.f, 0.8, 0.3);
-	mv.fillColor(violet, 20.f, 0.7, 0.4);
-	mi.fillColor(indigo, 20.f, 0.8, 0.6);
-	mb.fillColor(blue, 20.f, 0.2, 0.3);
-	mo.fillColor(orange, 20.f, 0.4, 0.6);
-	mr.fillColor(red, 20.f, 0.6, 0.2);
+    Material m1, m2, m3, mv, mi, mb, mo, mr;
+    m1.fillColor(c1, 200.f, 1, 2.1);
+    m2.fillColor(c2, 30.f, 1, 0.8);
+    m3.fillColor(c3, 500.f, 0.3, 2);
+    mv.fillColor(violet, 200.f, 0.1, 2.5);
+    mi.fillColor(indigo, 20.f, 0.2, 0.6);
+    mb.fillColor(blue, 200.f, 0.2, 1.3);
+    mo.fillColor(orange, 20.f, 0.4, 0.9);
+    mr.fillColor(white, 200.f, 1, 1);
 
-	vector<Sphere*> spheresList;
-	
-	Vector3f v1(-3.f, 0.f, -16.f);
-	Vector3f v2(-1.1, -1.5, -12.f), v3(-5, -8, -23.f);
-	Vector3f vv(-1.f, 5.f, -20.f), vi(-1.f, 2.f, -20.f), vb(-1.f, -2.f, -20.f);
-	Vector3f vo(-1.f, -5.f, -20.f), vr(-1.f, -10.f, -20.f);
-	
-	Sphere *s1 = new Sphere(2.f, v1, m1);
-	Sphere *s2 = new Sphere(1.f, v2, m2);
-	Sphere *s3 = new Sphere(3.f, v3, m3);
-	Sphere *sv = new Sphere(1.f, vv, mv);
-	Sphere *si = new Sphere(1.f, vi, mi);
-	Sphere *sb = new Sphere(1.f, vb, mb);
-	Sphere *so = new Sphere(1.f, vo, mo);
-	Sphere *sr = new Sphere(1.f, vr, mr);
-
-
-	spheresList.push_back(s1);
-	spheresList.push_back(s2);
-	spheresList.push_back(s3);
-	spheresList.push_back(sv);
-	spheresList.push_back(si);
-	spheresList.push_back(sb);
-	spheresList.push_back(so);
-	spheresList.push_back(sr);
+    vector<Sphere*> spheresList;
+    
+    Vector3f v1(-3.f, 0.f, -16.f);
+    Vector3f v2(-1.1, -1.5, -12.f), v3(-5, -8, -23.f);
+    Vector3f vv(-1.f, 5.f, -20.f), vi(-1.f, 2.f, -20.f), vb(-1.f, -2.f, -20.f);
+    Vector3f vo(-1.f, -5.f, -20.f), vr(-1.f, -10.f, -20.f);
+    
+    Sphere *s1 = new Sphere(2.f, v1, m1);
+    Sphere *s2 = new Sphere(1.f, v2, m2);
+    Sphere *s3 = new Sphere(3.f, v3, m3);
+    Sphere *sv = new Sphere(1.f, vv, mv);
+    Sphere *si = new Sphere(1.f, vi, mi);
+    Sphere *sb = new Sphere(1.f, vb, mb);
+    Sphere *so = new Sphere(1.f, vo, mo);
+    Sphere *sr = new Sphere(1.f, vr, mr);
 
 
-	vector<Light*> lightSourcesList;
+    spheresList.push_back(s1);
+    spheresList.push_back(s2);
+    spheresList.push_back(s3);
+    spheresList.push_back(sv);
+    spheresList.push_back(si);
+    spheresList.push_back(sb);
+    spheresList.push_back(so);
+    spheresList.push_back(sr);
 
-	Vector3f src1(-50.f, -30.f, -30.f);
-	Vector3f src2(0.f, 0.f, -20.f);
-	// Vector3f src3(20.f, 10.f, 10.f);
 
-	Light *l1 = new Light(src1, 1.2);
-	Light *l2 = new Light(src2, 1.8);
-	// Light *l3 = new Light(src3, 1.7);
+    vector<Light*> lightSourcesList;
 
-	lightSourcesList.push_back(l1);
-	lightSourcesList.push_back(l2);
-	// lightSourcesList.push_back(l3);
+    Vector3f src1(-50.f, -30.f, -30.f);
+    Vector3f src2(0.f, 0.f, -20.f);
+    Vector3f src3(20.f, 10.f, 10.f);
 
-	// Vector3f vp1(-2, 1,5), vp2(-2, 2,6), vp3(-2, 4,5);
-	// Color3f cp1(0.2, 0.2, 0.2);
-	// Material mp1;
-	// mp1.fillColor(cp1, 20.f, 0.9, 0.2);
-// 
-	vector <Plane*> planesList;
+    Light *l1 = new Light(src1, 1.2);
+    Light *l2 = new Light(src2, 1.8);
+    Light *l3 = new Light(src3, 1.7);
 
-	// Plane *p1 = new Plane(vp1, vp2, vp3, mp1);
-	// planesList.push_back(p1);
+    lightSourcesList.push_back(l1);
+    lightSourcesList.push_back(l2);
+    lightSourcesList.push_back(l3);
 
-	writeImage(spheresList, lightSourcesList, planesList);
+    Vector3f vp1(-2, 0, 5), vp2(-2, 7,6), vp3(-2, 2,5);
+    Color3f cp1(1, 1, 1);
+    Material mp1;
+    mp1.fillColor(cp1, 2.f, 1, 1);
 
-	return 0;
+    vector <Plane*> planesList;
+
+    Plane *p1 = new Plane(vp1, vp2, vp3, mp1);
+    // planesList.push_back(p1);
+
+    writeImage(spheresList, lightSourcesList, planesList);
+
+    return 0;
 }
