@@ -1,0 +1,32 @@
+#ifndef TRACER_H
+#define TRACER_H
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <limits>
+#include <cmath>
+#include <tuple>
+#include  <typeinfo>
+
+#include "color.h"
+#include "object.h"
+#include "vector.h"
+#include "ray.h"
+#include "material.h"
+#include "light.h"
+
+using namespace std;
+
+class Tracer{
+public:
+    float refractiveIndexOfMedium;
+    Tracer(float rIndex=1.0){refractiveIndexOfMedium = rIndex;}
+
+    bool SceneRayCasting(Ray3f &ray, vector<Object*> objectList, Vector3f &iPoint, Vector3f &nVector, Material &iMaterial);
+    Color3f RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*> lSrcList, int depth);
+    void writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList);
+
+};
+
+#endif
