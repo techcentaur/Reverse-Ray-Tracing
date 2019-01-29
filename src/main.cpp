@@ -87,7 +87,7 @@ int main(){
     // planesList.push_back(p1);
 
     Tracer rayTracer;
-    rayTracer.writeImage(objectList, lightSourcesList);
+    rayTracer.writeImage(objectList, lightSourcesList, true);
 
     return 0;
 }
