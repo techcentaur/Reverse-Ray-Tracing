@@ -17,6 +17,7 @@
 #include "material.h"
 #include "light.h"
 #include "tracer.h"
+#include "camera.h"
 
 using namespace std;
 
@@ -88,10 +89,16 @@ int main(int argc, char** argv){
     // Plane *p1 = new Plane(vp1, vp2, vp3, mp1);
     // planesList.push_back(p1);
 
+    int width = 1024;
+    int height = 768;
+
+    Vector3f camLookFrom(0, 0, 0), camLookAt(0, 0, -1), camViewUp(1, 0, 0);
+    Camera cam(camLookFrom, camLookAt, camViewUp, 90, float(width)/float(height));
+
     string fileName = argv[1];
 
     Tracer rayTracer;
-    rayTracer.writeImage(objectList, lightSourcesList, fileName, true);
+    rayTracer.writeImage(objectList, lightSourcesList, fileName, cam, false);
 
     return 0;
 }
