@@ -16,6 +16,7 @@
 #include "vector.h"
 #include "ray.h"
 #include "material.h"
+#include "camera.h"
 #include "light.h"
 
 using namespace std;
@@ -53,7 +54,7 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
     }
 
     // reflected ray recursive function
-    Vector3f reflectionVector = ((nVector*(2.f*((ray.direction).dot(nVector)))) - ray.direction).normalizeIt();
+    Vector3f reflectionVector = ((nVector*(2.f*((ray.direction*(-1)).dot(nVector)))) - ray.direction*(-1)).normalizeIt();
     Vector3f reflectedPoint;
     if(reflectionVector.dot(nVector) < 0) reflectedPoint = iPoint - nVector*1e-3;
     else reflectedPoint = iPoint + nVector*1e-3;
@@ -96,7 +97,7 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
         shadowRay.createRay(shadowPoint, lSrcDirection, true);
 
         if(SceneRayCasting(shadowRay, objectList, shadowIPoint, shadowNVector, shadowIMaterial)){
-            if((shadowIPoint - shadowPoint).length() < (lSrcList.at(i)->source - iPoint).length()){
+            if((shadowIPoint - shadowPoint).length() < (lSrcList.at(i)->source - shadowPoint).length()){
                 continue;
             }
         }
@@ -115,12 +116,13 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
     return ret;
 }
 
-void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList, string fileName, bool antiAliasing=false){
+void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList, string fileName, Camera &cam, bool antiAliasing=false){
     ofstream imageFile;
     imageFile.open(fileName);
 
     int width = 1024;
     int height = 768;
+    int superSamplingRays = 10;
     int fieldOfView = M_PI/2;
 
     vector<Color3f> pixelBuffer(width*height);
@@ -166,20 +168,18 @@ void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesL
             }
         }
     }else{
-        for(int i=0; i<height; i++){
+        for(int i=height-1; i>0; i--){
             for(int j=0; j<width; j++){
-                float x =  (2*(i + 0.5)/(float)width  - 1) * tan(fieldOfView/2.) * width/(float)height;
-                float y = -(2*(j + 0.5)/(float)height - 1) * tan(fieldOfView/2.);
-                
-                Vector3f dir(x, y, -1);
-                dir.normalizeIt();
+                Color3f col(0.f, 0.f, 0.f);
+                for(int s=0; s<superSamplingRays; s++){
+                    float x = float(j + drand48()) / float(width);
+                    float y = float(i + drand48()) / float(height);
 
-                // ray origin                
-                Vector3f orig(0, 0, 0);
-                Ray3f newRay;
-                newRay.createRay(orig, dir, true);
-                
-                pixelBuffer[j+i*width] = (RayCasting(newRay, objectList, lightSourcesList));
+                    Ray3f newRay = cam.getRay(x, y);
+                    col += (RayCasting(newRay, objectList, lightSourcesList));
+                }
+                col /= float(superSamplingRays);
+                pixelBuffer[j+i*width] = col;
             }
         }
     }

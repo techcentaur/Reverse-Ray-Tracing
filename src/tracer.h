@@ -16,6 +16,7 @@
 #include "ray.h"
 #include "material.h"
 #include "light.h"
+#include "camera.h"
 
 using namespace std;
 
@@ -26,7 +27,7 @@ public:
 
     bool SceneRayCasting(Ray3f &ray, vector<Object*> objectList, Vector3f &iPoint, Vector3f &nVector, Material &iMaterial);
     Color3f RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*> lSrcList, int depth);
-    void writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList, string fileName, bool antiAliasing);
+    void writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList, string fileName, Camera &cam, bool antiAliasing);
 
 };
 
