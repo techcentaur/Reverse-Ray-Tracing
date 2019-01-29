@@ -17,7 +17,7 @@ Sphere::Sphere(float r, Vector3f &vec, Material &m)
 	radius = r; center = vec; material = m;
 }
 
-bool Sphere::getIntersection(Ray3f &ray, float &t0){
+bool Sphere::getIntersection(Ray3f &ray, float &t0, Vector3f &nVector){
 
 	Vector3f v(0, 0, 0);
 
@@ -38,6 +38,10 @@ bool Sphere::getIntersection(Ray3f &ray, float &t0){
 	if(t0<0) return false; 
 
 	return true;
+}
+
+Vector3f Sphere::getNormalOnIntersectionPoint(Vector3f &point){
+	return (point - this->center).normalizeIt();
 }
 
 void Sphere::print(){

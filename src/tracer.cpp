@@ -24,18 +24,17 @@ bool Tracer::SceneRayCasting(Ray3f &ray, vector<Object*> objectList, Vector3f &i
 
     float closestIntersection;
     for(int i=0; i<objectList.size(); i++){
-        bool temp = objectList.at(i)->getIntersection(ray, closestIntersection);
+        bool temp = objectList.at(i)->getIntersection(ray, closestIntersection, nVector);
 
         if(temp && closestIntersection < maxDistance){
             maxDistance = closestIntersection;
-            // don't need intersection point and normal vector: Fuunction will do it (call by reference)
-            // iPoint = ray.origin + ray.direction*closestIntersection;
-            // nVector = (iPoint - objectList.at(i)->center).normalizeIt();
+            // don't need intersection point and normal vector: Fuuction will do the work (call by reference)
 
+            iPoint = ray.origin + ray.direction*closestIntersection;
+            nVector = objectList.at(i)->getNormalOnIntersectionPoint(iPoint);
             iMaterial = objectList.at(i)->material;
         }
     }
-
     return maxDistance < 5000;
 }
 
