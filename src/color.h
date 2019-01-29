@@ -16,6 +16,8 @@ public:
 	Color3f operator * (float f);	
 	Color3f operator * (const Color3f &col);
 	Color3f operator + (const Color3f &col);
+	void operator += (const Color3f &col);
+	void operator /= (const float f);
 
 	void print();
 

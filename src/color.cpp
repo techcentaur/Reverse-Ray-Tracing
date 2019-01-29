@@ -17,5 +17,12 @@ Color3f Color3f::operator * (const Color3f &col){
 Color3f Color3f::operator + (const Color3f &col){
 	return Color3f(r+col.r, g+col.g, b+col.b);
 }
+void Color3f::operator += (const Color3f &col){
+	r = r+col.r; g = g+col.g; b = b+col.b;
+}
+void Color3f::operator /= (const float f){
+	r = r/f; g = g/f; b = b/f;
+}
+
 
 void Color3f::print(){cout<<"[*] Color: "<<"("<<r<<", "<<g<<", "<<b<<")"<<endl;}
