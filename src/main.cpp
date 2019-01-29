@@ -7,6 +7,8 @@
 #include <cmath>
 #include <tuple>
 #include  <typeinfo>
+#include <cstring>
+
 
 #include "color.h"
 #include "object.h"
@@ -18,7 +20,7 @@
 
 using namespace std;
 
-int main(){
+int main(int argc, char** argv){
     Color3f c1(0.3, 0.8, 0.7), c2(0.2, 0.9, 0.3), c3(0.5, 0.1, 0.1);
     Color3f violet(0.6, 0, 0.8), indigo(0.26, 0, 0.56), blue(0, 0, 1);
     Color3f orange(1, 0.5, 0), white(1.0, 1.0, 1.0);
@@ -86,8 +88,10 @@ int main(){
     // Plane *p1 = new Plane(vp1, vp2, vp3, mp1);
     // planesList.push_back(p1);
 
+    string fileName = argv[1];
+
     Tracer rayTracer;
-    rayTracer.writeImage(objectList, lightSourcesList, true);
+    rayTracer.writeImage(objectList, lightSourcesList, fileName, true);
 
     return 0;
 }

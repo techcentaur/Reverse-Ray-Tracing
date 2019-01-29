@@ -7,6 +7,8 @@
 #include <cmath>
 #include <tuple>
 #include  <typeinfo>
+#include <cstring>
+
 
 #include "tracer.h"
 #include "color.h"
@@ -113,9 +115,9 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
     return ret;
 }
 
-void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList, bool antiAliasing=false){
+void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList, string fileName, bool antiAliasing=false){
     ofstream imageFile;
-    imageFile.open("./figures/exp1/19-6.ppm");
+    imageFile.open(fileName);
 
     int width = 1024;
     int height = 768;

@@ -8,6 +8,7 @@
 #include <cmath>
 #include <tuple>
 #include  <typeinfo>
+#include <cstring>
 
 #include "color.h"
 #include "object.h"
@@ -25,7 +26,7 @@ public:
 
     bool SceneRayCasting(Ray3f &ray, vector<Object*> objectList, Vector3f &iPoint, Vector3f &nVector, Material &iMaterial);
     Color3f RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*> lSrcList, int depth);
-    void writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList, bool antiAliasing);
+    void writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList, string fileName, bool antiAliasing);
 
 };
 
