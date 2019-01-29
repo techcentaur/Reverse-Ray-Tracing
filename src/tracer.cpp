@@ -113,9 +113,9 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
     return ret;
 }
 
-void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList){
+void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList, bool antiAliasing=false){
     ofstream imageFile;
-    imageFile.open("./figures/exp1/19-5.ppm");
+    imageFile.open("./figures/exp1/19-6.ppm");
 
     int width = 1024;
     int height = 768;
@@ -124,20 +124,61 @@ void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesL
     vector<Color3f> pixelBuffer(width*height);
     
     // base color for all pixels
-    for(int i=0; i<height; i++){
-        for(int j=0; j<width; j++){
-            float x =  (2*(i + 0.5)/(float)width  - 1) * tan(fieldOfView/2.) * width/(float)height;
-            float y = -(2*(j + 0.5)/(float)height - 1) * tan(fieldOfView/2.);
-            
-            Vector3f dir(x, y, -1);
-            dir.normalizeIt();
+    if(antiAliasing){
+        for(int i=0; i<height; i++){
+            for(int j=0; j<width; j++){
+                float x =  (2*(i + 0.25)/(float)width  - 1) * tan(fieldOfView/2.) * width/(float)height;
+                float y = -(2*(j + 0.25)/(float)height - 1) * tan(fieldOfView/2.);
+                
+                Vector3f dir1(x, y, -1);
+                dir1.normalizeIt();
 
-            // ray origin                
-            Vector3f orig(0, 0, 0);
-            Ray3f newRay;
-            newRay.createRay(orig, dir, true);
-            
-            pixelBuffer[j+i*width] = RayCasting(newRay, objectList, lightSourcesList);
+                x =  (2*(i + 0.25)/(float)width  - 1) * tan(fieldOfView/2.) * width/(float)height;
+                y = -(2*(j + 0.75)/(float)height - 1) * tan(fieldOfView/2.);
+
+                Vector3f dir2(x, y, -1);
+                dir2.normalizeIt();
+
+                x =  (2*(i + 0.75)/(float)width  - 1) * tan(fieldOfView/2.) * width/(float)height;
+                y = -(2*(j + 0.25)/(float)height - 1) * tan(fieldOfView/2.);
+
+                Vector3f dir3(x, y, -1);
+                dir3.normalizeIt();
+
+                x =  (2*(i + 0.75)/(float)width  - 1) * tan(fieldOfView/2.) * width/(float)height;
+                y = -(2*(j + 0.75)/(float)height - 1) * tan(fieldOfView/2.);
+
+                Vector3f dir4(x, y, -1);
+                dir4.normalizeIt();
+
+                // ray origin                
+                Vector3f orig(0, 0, 0);
+                Ray3f newRay1, newRay2, newRay3, newRay4;
+                newRay1.createRay(orig, dir1, true);
+                newRay2.createRay(orig, dir2, true);
+                newRay3.createRay(orig, dir3, true);
+                newRay4.createRay(orig, dir4, true);
+
+                
+                pixelBuffer[j+i*width] = (RayCasting(newRay1, objectList, lightSourcesList) + RayCasting(newRay2, objectList, lightSourcesList) + RayCasting(newRay3, objectList, lightSourcesList) + RayCasting(newRay4, objectList, lightSourcesList))*0.25;
+            }
+        }
+    }else{
+        for(int i=0; i<height; i++){
+            for(int j=0; j<width; j++){
+                float x =  (2*(i + 0.5)/(float)width  - 1) * tan(fieldOfView/2.) * width/(float)height;
+                float y = -(2*(j + 0.5)/(float)height - 1) * tan(fieldOfView/2.);
+                
+                Vector3f dir(x, y, -1);
+                dir.normalizeIt();
+
+                // ray origin                
+                Vector3f orig(0, 0, 0);
+                Ray3f newRay;
+                newRay.createRay(orig, dir, true);
+                
+                pixelBuffer[j+i*width] = (RayCasting(newRay, objectList, lightSourcesList));
+            }
         }
     }
 

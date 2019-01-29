@@ -25,7 +25,7 @@ public:
 
     bool SceneRayCasting(Ray3f &ray, vector<Object*> objectList, Vector3f &iPoint, Vector3f &nVector, Material &iMaterial);
     Color3f RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*> lSrcList, int depth);
-    void writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList);
+    void writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList, bool antiAliasing);
 
 };
 
