@@ -6,6 +6,8 @@
 
 using namespace std;
 
+Transformation::Transformation(){};
+
 Vector3f Transformation::translation(const Vector3f &v, const Vector3f &transform){
           // Traditional Way
           Matrix tmatrix;

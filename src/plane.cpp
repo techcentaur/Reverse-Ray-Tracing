@@ -4,17 +4,25 @@
 #include "material.h"
 #include "plane.h"
 #include "color.h"
+#include "transformation.h"
 #include <tuple>
 
 using namespace std;
 
 Plane::Plane(){}
 
+// Plane initialization with a point and normal
+Plane::Plane(Vector3f &p, Vector3f &n, Material &m){
+	material = m;
+	point = p;
+	normal = n;
+}
+
+// Plane initialization with three points on plane
 Plane::Plane(Vector3f &p1, Vector3f &p2, Vector3f &p3, Material &m){
 	material = m;
 	point = p1;
 	normal = (p1.cross(p1-p2, p1-p3)).normalizeIt();
-
 }
 
 bool Plane::getIntersection(Ray3f &ray, float &param){
@@ -23,10 +31,11 @@ bool Plane::getIntersection(Ray3f &ray, float &param){
 
 	float denom = normal.dot(ray.direction);
 	if(denom > 1e-6){
-		float t = ((point - ray.origin).dot(normal))/((ray.direction).dot(normal));
+		t = ((point - ray.origin).dot(normal))/((ray.direction).dot(normal));
 		
-		Vector3f intersectPoint = ray.origin + (ray.direction)*param;
+		Vector3f intersectPoint = ray.origin + (ray.direction)*t;
 
+		// If the point is behind camera
 		if((ray.origin).lengthFrom(intersectPoint) > (ray.origin + ray.direction).lengthFrom(intersectPoint)){
 			param = t;
 			return true;
@@ -44,6 +53,27 @@ tuple<float, Vector3f> Plane::distanceAlongRay(Ray3f &ray){
 	float dist = (ray.origin).lengthFrom(intersectPoint);
 
 	return make_tuple(dist, intersectPoint);
+}
+
+void translation(const Vector3f &transform){
+	Transformation t;
+	Vector3f new_point = t.translation(point, transform);
+	point = new_point;
+}
+void rotateAboutX(float angle){
+	Transformation t;
+	Vector3f new_normal = t.rotateAboutX(normal, angle);
+	normal = new_normal;
+}
+void rotateAboutY(float angle){
+	Transformation t;
+	Vector3f new_normal = t.rotateAboutY(normal, angle);
+	normal = new_normal;
+}
+void rotateAboutZ(float angle){
+	Transformation t;
+	Vector3f new_normal = t.rotateAboutZ(normal, angle);
+	normal = new_normal;
 }
 
 void Plane::print(){
