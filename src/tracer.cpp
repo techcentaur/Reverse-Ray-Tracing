@@ -34,7 +34,8 @@ bool Tracer::SceneRayCasting(Ray3f &ray, vector<Object*> objectList, Vector3f &i
             // don't need intersection point and normal vector: Fuuction will do the work (call by reference)
 
             iPoint = ray.origin + ray.direction*closestIntersection;
-            nVector = objectList.at(i)->getNormalOnIntersectionPoint(iPoint);
+            nVector = objectList.at(i)->getNormalOnIntersectionPoint(iPoint, ray);
+
             iMaterial = objectList.at(i)->material;
         }
     }
@@ -48,13 +49,13 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
 
     bool temp = SceneRayCasting(ray, objectList, iPoint, nVector, iMaterial);
 
-    if(!temp || depth > 2){
+    if(!temp || depth > this->recursionDepth){
         Color3f c1(0.2, 0.7, 0.7);
         return c1;
     }
 
     // reflected ray recursive function
-    Vector3f reflectionVector = ((nVector*(2.f*((ray.direction*(-1)).dot(nVector)))) - ray.direction*(-1)).normalizeIt();
+    Vector3f reflectionVector = ((nVector*(2.f*((ray.direction).dot(nVector)))) - ray.direction).normalizeIt();
     Vector3f reflectedPoint;
     if(reflectionVector.dot(nVector) < 0) reflectedPoint = iPoint - nVector*1e-3;
     else reflectedPoint = iPoint + nVector*1e-3;
@@ -64,7 +65,7 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
     Color3f reflectedSurfaceColor = RayCasting(reflectedRay, objectList, lSrcList, depth+1);
 
 
-    // refracted ray recursive function
+    // refracted ray recursive function - first refraction
     float eta = this->refractiveIndexOfMedium/iMaterial.refractiveIndex;
     float costheta1 = max(-1.f, min(1.f, ray.direction.dot(nVector)));
     float sintheat2 = max(-1.f, min(1.f, eta*costheta1));
@@ -77,6 +78,9 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
 
     Ray3f refractedRay;
     refractedRay.createRay(refractedPoint, refractedVector, true);
+
+    // final ray achieved after 2 refraction
+
     Color3f refractedSurfaceColor = RayCasting(refractedRay, objectList, lSrcList, depth+1);
 
     // phong illumination model
@@ -119,14 +123,15 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
 void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList, string fileName, Camera &cam, bool antiAliasing=false){
     ofstream imageFile;
     imageFile.open(fileName);
-
-    int width = 1024;
-    int height = 768;
-    int superSamplingRays = 10;
-    int fieldOfView = M_PI/2;
+    cout<<fileName<<endl;
+    int width = cam.width;
+    int height = cam.height;
+    int superSamplingRays = cam.superSampling;
+    int fieldOfView = cam.fov;
+    this->recursionDepth = cam.recursionDepth;
 
     vector<Color3f> pixelBuffer(width*height);
-    
+
     // base color for all pixels
     if(antiAliasing){
         for(int i=0; i<height; i++){

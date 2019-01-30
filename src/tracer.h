@@ -23,7 +23,10 @@ using namespace std;
 class Tracer{
 public:
     float refractiveIndexOfMedium;
-    Tracer(float rIndex=1.0){refractiveIndexOfMedium = rIndex;}
+    float recursionDepth;
+    Tracer(float rIndex=1.0){refractiveIndexOfMedium = rIndex;
+    	recursionDepth = 4;
+    }
 
     bool SceneRayCasting(Ray3f &ray, vector<Object*> objectList, Vector3f &iPoint, Vector3f &nVector, Material &iMaterial);
     Color3f RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*> lSrcList, int depth);
