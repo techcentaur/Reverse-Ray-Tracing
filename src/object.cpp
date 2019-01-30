@@ -3,6 +3,7 @@
 #include "ray.h"
 #include "material.h"
 #include "object.h"
+#include "transformation.h"
 #include <cmath>
 
 using namespace std;
@@ -153,3 +154,37 @@ void Plane::print(){
 }
 
 // ------------------------------Plane---------------------------
+
+
+// -------------------------------Box----------------------------
+
+Box::Box(float la, float lb, float lc, Vector3f &p, Material &m):Object(m){
+          Transformation t;
+          lenA = la; lenB = lb; lenC = lc;
+          point = p;
+          material = m;
+
+          dirA = Vector3f(1.f,0.f,0.f);
+          dirB = Vector3f(0.f,1.f,0.f);
+          dirC = Vector3f(0.f,0.f,1.f);
+
+          dirA_ = Vector3f(-1.f,0.f,0.f);
+          dirB_ = Vector3f(0.f,-1.f,0.f);
+          dirC_ = Vector3f(0.f,0.f,-1.f);
+}
+
+tuple<Vector3f, bool> Box::getIntersection(Ray3f &ray, float &t0){
+          // intersection in xy face
+          vector<tuple<Vector3f,bool> > intersections;
+          
+          // 1 faceXY
+          Vector3f facePoint(point+lenC);
+          // new Plane face(facePoint, dirC, material);
+          // intersections.push_back(getFaceIntersection(ray, face, max(point.x,)))
+}
+tuple<Vector3f, bool> Box::getFaceIntersection(Ray3f &ray, Plane &f, float b1, float b1_, float b2, float b2_, float &t0){
+
+}
+void Box::print(){
+}
+// -------------------------------Box----------------------------
