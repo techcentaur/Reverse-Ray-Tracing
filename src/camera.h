@@ -15,12 +15,26 @@ public:
     Vector3f BottomLeftCorner;
     Vector3f horizontal;
     Vector3f vertical;
+    float recursionDepth;
+    float width;
+    float height;
+    float superSampling;
+    float fov;
 
-    Camera(Vector3f lookFrom, Vector3f lookAt, Vector3f viewUp, float verticalFOV, float aspect){
+    Camera(){};
+
+    void formCamera(Vector3f lookFrom, Vector3f lookAt, Vector3f viewUp, float verticalFOV, float wid, float h, float sSampling, float rD){
         Vector3f u, v, w;
+
+        this->width=wid;
+        this->height=h;
+        this->recursionDepth = rD;
+        this->superSampling = sSampling;
+        this->fov = verticalFOV;
 
         float theta = verticalFOV*M_PI/180; //degree to radian
 
+        float aspect = float(wid)/float(h);
         float heightHalf = tan(theta/2);
         float widthHalf = aspect * heightHalf;
 
@@ -40,6 +54,14 @@ public:
         Ray3f newRay;
         newRay.createRay(origin, temp, true);
         return newRay; 
+    }
+
+    void print(){
+    cout<<"recursionDepth: "<<recursionDepth<<endl;
+    cout<<"width: "<<width<<endl;
+    cout<<"height: "<<height<<endl;
+    cout<<"superSampling: "<<superSampling<<endl;
+    cout<<"fov"<<fov<<endl;
     }
 
 };
