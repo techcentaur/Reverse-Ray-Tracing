@@ -27,7 +27,15 @@ public:
 		refractiveIndex = rIndex;
 	}
 	
-	void print(){cout<<"[*] Material: "; diffuseColor.print();}
+	void print(){cout<<"[*] Material: "; diffuseColor.print();
+	cout<<"specularReflectionExponent: "<<specularReflectionExponent<<endl;
+	cout<<"specularReflectionCoefficient: "<<specularReflectionCoefficient<<endl;
+	cout<<"diffuseReflectionCoefficient: "<<diffuseReflectionCoefficient<<endl;
+	cout<<"reflectionCoefficient: "<<reflectionCoefficient<<endl;
+	cout<<"refractionCoefficient: "<<refractionCoefficient<<endl;
+	cout<<"refractiveIndex: "<<refractiveIndex<<endl;
+
+	}
 };
 
 #endif

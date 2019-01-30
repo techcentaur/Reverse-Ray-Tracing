@@ -16,7 +16,8 @@ public:
 	Object(Material &m);
 	virtual bool getIntersection(Ray3f &ray, float &t, Vector3f &nVector) = 0;
 	virtual void print() = 0;
-	virtual Vector3f getNormalOnIntersectionPoint(Vector3f &point) = 0;
+	virtual Vector3f getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray) = 0;
+
 };
 
 class Sphere : public Object {
@@ -24,12 +25,13 @@ class Sphere : public Object {
 public:
 	float radius;
 	Vector3f center;
+	Vector3f intersectionPointIfRefracted;
 
 	Sphere();	
 	Sphere(float radius, Vector3f &vec, Material &m);
 
 	bool getIntersection(Ray3f &ray, float &t, Vector3f &nVector);
-	Vector3f getNormalOnIntersectionPoint(Vector3f &point);
+	Vector3f getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray);
 
 	void print();
 };

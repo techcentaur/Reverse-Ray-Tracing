@@ -33,16 +33,26 @@ bool Sphere::getIntersection(Ray3f &ray, float &t0, Vector3f &nVector){
 	t0 = lineProjection-projection2;
 	
 	float t1 = lineProjection + projection2;
-	
-	if(t0>0) t0 = t1;
-	if(t0<0) return false; 
+	float temp;
+	if(t0>=0){
+		temp = t0;
+		t0 = t1;
+	}else{
+		 return false;
+	} 
+
+	t1 = temp;
 
 	return true;
 }
 
-Vector3f Sphere::getNormalOnIntersectionPoint(Vector3f &point){
+Vector3f Sphere::getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray){
+	if((ray.origin).lengthFrom(this->center) < radius){
+		return (this->center - point).normalizeIt();	
+	}
 	return (point - this->center).normalizeIt();
 }
+
 
 void Sphere::print(){
 	cout<<"[*] Sphere: \n";
