@@ -35,29 +35,34 @@ Vector3f Transformation::scaling(const Vector3f &v, const Vector3f &transform){
 }
 
 Vector3f Transformation::rotateAboutX(const Vector3f &v, float angle){
+          float a = M_PI * angle / 180;
           Matrix tmatrix;
           Matrix vmatrix(v);
-          tmatrix.mat[0][0] = cos(angle);
-          tmatrix.mat[1][1] = cos(angle);
-          tmatrix.mat[0][1] = -sin(angle);
-          tmatrix.mat[1][0] = sin(angle);
+          tmatrix.mat[1][1] = cos(a);
+          tmatrix.mat[2][2] = cos(a);
+          tmatrix.mat[1][2] = -sin(a);
+          tmatrix.mat[2][1] = sin(a);
           return (tmatrix * vmatrix).toVector3f();
 }
+
 Vector3f Transformation::rotateAboutY(const Vector3f &v, float angle){
+          float a = M_PI * angle / 180;
           Matrix tmatrix;
           Matrix vmatrix(v);
-          tmatrix.mat[0][0] = cos(angle);
-          tmatrix.mat[2][2] = cos(angle);
-          tmatrix.mat[2][0] = -sin(angle);
-          tmatrix.mat[0][2] = sin(angle);
+          tmatrix.mat[0][0] = cos(a);
+          tmatrix.mat[2][2] = cos(a);
+          tmatrix.mat[2][0] = -sin(a);
+          tmatrix.mat[0][2] = sin(a);
           return (tmatrix * vmatrix).toVector3f();
 }
+
 Vector3f Transformation::rotateAboutZ(const Vector3f &v, float angle){
+          float a = M_PI * angle / 180;
           Matrix tmatrix;
           Matrix vmatrix(v);
-          tmatrix.mat[1][1] = cos(angle);
-          tmatrix.mat[2][2] = cos(angle);
-          tmatrix.mat[1][2] = -sin(angle);
-          tmatrix.mat[2][1] = sin(angle);
+          tmatrix.mat[0][0] = cos(a);
+          tmatrix.mat[1][1] = cos(a);
+          tmatrix.mat[0][1] = -sin(a);
+          tmatrix.mat[1][0] = sin(a);
           return (tmatrix * vmatrix).toVector3f();
 }

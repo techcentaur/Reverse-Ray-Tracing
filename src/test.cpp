@@ -1,31 +1,24 @@
 #include <iostream>
-#include "vector.h"
-#include "matrix.h"
-#include "transformation.h"
 #include <vector>
 #include <cmath>
+
+#include "color.h"
+#include "vector.h"
+#include "transformation.h"
+#include "box.h"
+#include "material.h"
 using namespace std;
 
 int main(){
-	float x,y,z;
-	x=5;
-	y=6;
-	z=2;
-	Vector3f v(x,y,z);
-	Vector3f t(3.f,0.f,1.f);
-	
-	Matrix tmatrix;
-          tmatrix.mat[0][0] = t.x;
-          tmatrix.mat[1][1] = t.y;
-          tmatrix.mat[2][2] = t.z;
+          Vector3f c(0.5,1.f,1.5);
 
-	Matrix vmatrix(v);
-	
-          // Vector3f ans = (tmatrix * vmatrix).toVector3f();
-	// tmatrix.print();
-	// vmatrix.print();
-	Vector3f ans(v * t);
-	ans.print();
-	// ans.print();
-	return 1;
+          Color3f c1(0.3, 0.8, 0.7);
+          Material m1;
+          m1.fillColor(c1, 20.f, 1, 0.1, 0.5);
+          
+          cout<<cos(-M_PI_2);
+          // m = Transformation::rotateAboutZ(n, 90.f);
+          // m.print();
+          Box b(1.f, 2.f, 3.f,c,m1);
+          b.print();
 }
