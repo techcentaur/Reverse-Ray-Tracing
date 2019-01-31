@@ -5,6 +5,8 @@
 #include "object.h"
 #include "transformation.h"
 #include <cmath>
+#include <limits>
+
 
 using namespace std;
 
@@ -66,12 +68,10 @@ void Sphere::print(){
 // ------------------------------Plane---------------------------
 
 // Plane initialization with a point and normal
-// Plane::Plane(Vector3f &p, Vector3f &n, Material &m, vector<float> b):Object(m){
-// 	material = m;
-// 	point = p;
-// 	normal = n;
-// 	bounds = b;
-// }
+Plane::Plane(Vector3f &p, Vector3f &n, Material &m):Object(m){
+	point = p;
+	normal = n.normalizeIt();
+}
 
 // Plane initialization with three points on plane
 Plane::Plane(Vector3f &p1, Vector3f &p2, Vector3f &p3, Material &m):Object(m){
@@ -155,38 +155,100 @@ void Plane::print(){
 // ------------------------------Plane---------------------------
 
 
-// // -------------------------------Box----------------------------
+// -------------------------------Box----------------------------
 
-// Box::Box(float la, float lb, float lc, Vector3f &p, Material &m):Object(m){
-//           Transformation t;
-//           lenA = la; lenB = lb; lenC = lc;
-//           point = p;
-//           material = m;
+Box::Box(Material &m):Object(m){
 
-//           dirA = Vector3f(1.f,0.f,0.f);
-//           dirB = Vector3f(0.f,1.f,0.f);
-//           dirC = Vector3f(0.f,0.f,1.f);
+		// Transformation t;
+		// lenA = la; lenB = lb; lenC = lc;
+		// point = p;
+		// material = m;
 
-//           dirA_ = Vector3f(-1.f,0.f,0.f);
-//           dirB_ = Vector3f(0.f,-1.f,0.f);
-//           dirC_ = Vector3f(0.f,0.f,-1.f);
-// }
+		// dirA = Vector3f(1.f,0.f,0.f);
+		// dirB = Vector3f(0.f,1.f,0.f);
+		// dirC = Vector3f(0.f,0.f,1.f);
 
-// tuple<Vector3f, bool> Box::getIntersection(Ray3f &ray, float &t0){
-//           // intersection in xy face
-//           vector<tuple<Vector3f,bool> > intersections;
-          
-//           // 1 faceXY
-//           Vector3f facePoint(point+lenC);
-//           // new Plane face(facePoint, dirC, material);
-//           // intersections.push_back(getFaceIntersection(ray, face, max(point.x,)))
-// }
-// tuple<Vector3f, bool> Box::getFaceIntersection(Ray3f &ray, Plane &f, float b1, float b1_, float b2, float b2_, float &t0){
+		// dirA_ = Vector3f(-1.f,0.f,0.f);
+		// dirB_ = Vector3f(0.f,-1.f,0.f);
+  // dirC_ = Vector3f(0.f,0.f,-1.f);
 
-// }
-// void Box::print(){
-// }
-// // -------------------------------Box----------------------------
+		Vector3f v1(0, 0, 0), v2(1, 1, 1);
+		Vector3f n1(1, 0, 0), n2(0, 1, 0), n3(0, 0, 1);
+		Vector3f n4(-1, 0, 0), n5(0, -1, 0), n6(0, 0, -1);
+		Plane p1(v1, n1, m), p2(v1, n2, m), p3(v1, n3, m);
+		Plane p4(v2, n4, m), p5(v2, n5, m), p6(v2, n6, m);
+
+		planes.push_back(p1);
+		planes.push_back(p2);
+		planes.push_back(p3);
+		planes.push_back(p4);
+		planes.push_back(p5);
+		planes.push_back(p6);
+
+		Vector3f recentNormal(0.0, 0.0, 0.0);
+
+		Vector3f vp1(0, 0, 0), vp2(1, 1, 1);
+		boundPoints.push_back(vp1);
+		boundPoints.push_back(vp2);
+
+}
+
+
+bool Box::getIntersection(Ray3f &ray, float &t){
+	vector<tuple<float, int>> allParams;
+	for(int i=0; i<planes.size(); i++){
+		float t1;
+		if((planes.at(i)).getIntersection(ray, t1)){
+            // Vector3f iPoint = ray.origin + ray.direction*t1;
+            // Vector3f nVector = (planes.at(i)).getNormalOnIntersectionPoint(iPoint, ray);
+			allParams.push_back(make_tuple(t1, i));
+		}	
+	}
+
+	// cout<<allParams.size();
+
+	int minIndex = numeric_limits<int>::max();
+	bool flag = false;
+	float minT = numeric_limits<float>::max();
+	for(int i=0; i<allParams.size(); i++){
+		if(minT > get<0>(allParams.at(i)) && get<0>(allParams.at(i))>=0){
+			minT = get<0>(allParams.at(i));
+			minIndex = get<1>(allParams.at(i));
+			flag = true;
+		}
+	}
+
+	if(flag){
+		t = minT;
+		Vector3f interPoint = ray.origin + ray.direction*minT;
+
+		// if((interPoint.x <= boundPoints[1].x && interPoint.x >= boundPoints[0].x) || (interPoint.x >= boundPoints[1].x && interPoint.x <= boundPoints[0].x)){
+		// 	cout<<"*";
+		// 	if((interPoint.y <= boundPoints[1].y && interPoint.y >= boundPoints[0].y) || (interPoint.y >= boundPoints[1].y && interPoint.y <= boundPoints[0].y)){
+		// 		cout<<"+";
+				// if((interPoint.z <= boundPoints[1].z && interPoint.z >= boundPoints[0].z) || (interPoint.z >= boundPoints[1].z && interPoint.z <= boundPoints[0].z)){
+				// 	cout<<"l/"<<endl;
+					recentNormal = planes[minIndex].getNormalOnIntersectionPoint(interPoint, ray);
+					cout<<flag;
+					return true;
+				// }
+
+		// 	}
+
+		// }
+	}
+
+	return false;
+}
+
+Vector3f Box::getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray){
+	return recentNormal;
+}
+
+void Box::print(){
+	cout<<"Not implemented"<<endl;
+}
+// -------------------------------Box----------------------------
 
 
 

@@ -295,6 +295,41 @@ int main(int argc, char** argv){
                     Object* p = new Plane(point1, point2, point3, m);
                     objects.push_back(p);
                 }
+                if(type == "BOX"){
+                    Color3f color;
+                    float sRE, sRC, dRC, reflecC, refracC, rI;
+                    while(ifs.good()){
+                        ifs>>type;
+                        if(type=="COLOR"){
+                            ifs>>color.r>>color.g>>color.b;
+                        }
+                        else if(type=="SPECULAR_REFLECTION_EXPONENT"){
+                            ifs>>sRE;
+                        }
+                        else if(type=="SPECULAR_REFLECTION_COEFF"){
+                            ifs>>sRC;
+                        }
+                        else if(type=="DIFFUSE_REFLECTION_COEFF"){
+                            ifs>>dRC;
+                        }
+                        else if(type=="REFLECTION_COEFF"){
+                            ifs>>reflecC;
+                        }
+                        else if(type=="REFRACTION_COEFF"){
+                            ifs>>refracC;
+                        }
+                        else if(type=="REFRACTIVE_INDEX"){
+                            ifs>>rI;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    Material m;
+                    m.fillColor(color, sRE, sRC, dRC, reflecC, refracC, rI);
+                    Object* b = new Box(m);
+                    objects.push_back(b);
+                }
                 else{
                     break;
                 }
@@ -306,7 +341,7 @@ int main(int argc, char** argv){
     }
 
 
-    string fileName = "./figures/exp1/32.ppm";
+    string fileName = "./figures/exp1/34.ppm";
     Tracer rayTracer;
     
     rayTracer.writeImage(objects, lights, fileName, cam, false);

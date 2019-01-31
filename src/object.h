@@ -45,7 +45,7 @@ public:
 	// vector<float> bounds;
 	
 	Plane();
-	// Plane(Vector3f &p, Vector3f &n, Material &m, vector<float> b);
+	Plane(Vector3f &p, Vector3f &n, Material &m);
 	Plane(Vector3f &p1, Vector3f &p2, Vector3f &p3, Material &m);
 
 	bool getIntersection(Ray3f &ray, float &t);
@@ -59,28 +59,26 @@ public:
 
 };
 
-// class Box : public Object{
+class Box : public Object{
 
-// public:
-// 	float lenA,lenB,lenC;
-// 	Vector3f point;
-// 	Vector3f dirA, dirB, dirC;
-// 	Vector3f dirA_, dirB_, dirC_;
+public:
+	// float lenA,lenB,lenC;
+	// Vector3f point;
+	// Vector3f dirA, dirB, dirC;
+	// Vector3f dirA_, dirB_, dirC_;
+	Vector3f recentNormal;
+	vector<Plane> planes;
+	vector<Vector3f> boundPoints;
 	
-// 	Material material;
-
-// 	Box();
-// 	// Box with edges aligned to x,y,z. Point p is origin of the box?
-// 	  Box(float la, float lb, float lc, Vector3f &p, Material &m);
-
-// 	void getFaces();
+	Box();
+	Box(Material &m);
 	
-// 	tuple<Vector3f, bool> getIntersection(Ray3f &ray, float &t);
-// 	tuple<Vector3f, bool> getFaceIntersection(Ray3f &ray, Plane &f, float b1, float b1_, float b2, float b2_, float &t);
+	bool getIntersection(Ray3f &ray, float &t);
+	Vector3f getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray);
 	
-// 	void print();
+	void print();
 
-// };
+};
 
 
 class Cone : public Object{
