@@ -123,7 +123,7 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
 void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList, string fileName, Camera &cam, bool antiAliasing=false){
     ofstream imageFile;
     imageFile.open(fileName);
-    cout<<fileName<<endl;
+
     int width = cam.width;
     int height = cam.height;
     int superSamplingRays = cam.superSampling;
@@ -173,7 +173,7 @@ void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesL
             }
         }
     }else{
-        for(int i=height-1; i>0; i--){
+        for(int i=height-1; i>=0; i--){
             for(int j=0; j<width; j++){
                 Color3f col(0.f, 0.f, 0.f);
                 for(int s=0; s<superSamplingRays; s++){
