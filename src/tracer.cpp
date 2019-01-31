@@ -27,7 +27,7 @@ bool Tracer::SceneRayCasting(Ray3f &ray, vector<Object*> objectList, Vector3f &i
 
     float closestIntersection;
     for(int i=0; i<objectList.size(); i++){
-        bool temp = objectList.at(i)->getIntersection(ray, closestIntersection, nVector);
+        bool temp = objectList.at(i)->getIntersection(ray, closestIntersection);
 
         if(temp && closestIntersection < maxDistance){
             maxDistance = closestIntersection;
