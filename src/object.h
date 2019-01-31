@@ -37,28 +37,27 @@ public:
 	void print();
 };
 
-// class Plane : public Object {
+class Plane : public Object {
 
-// public:
-// 	Vector3f point;
-// 	Vector3f normal;
-// 	Material material;
-// 	vector<float> bounds;
+public:
+	Vector3f point;
+	Vector3f normal;
+	// vector<float> bounds;
 	
-// 	Plane();
-// 	Plane(Vector3f &p, Vector3f &n, Material &m, vector<float> b);
-// 	Plane(Vector3f &p1, Vector3f &p2, Vector3f &p3, Material &m, vector<float> b);
+	Plane();
+	// Plane(Vector3f &p, Vector3f &n, Material &m, vector<float> b);
+	Plane(Vector3f &p1, Vector3f &p2, Vector3f &p3, Material &m);
 
-// 	bool getIntersection(Ray3f &ray, float &param);
-// 	Vector3f getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray);
-// 	void print();
+	bool getIntersection(Ray3f &ray, float &t);
+	Vector3f getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray);
+	void print();
 
-// 	void translation(const Vector3f &transform);
-// 	void rotateAboutX(float angle);
-// 	void rotateAboutY(float angle);
-// 	void rotateAboutZ(float angle);
+	// void translation(const Vector3f &transform);
+	// void rotateAboutX(float angle);
+	// void rotateAboutY(float angle);
+	// void rotateAboutZ(float angle);
 
-// };
+};
 
 // class Box : public Object{
 
