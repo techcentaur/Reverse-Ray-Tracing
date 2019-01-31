@@ -160,10 +160,10 @@ int main(int argc, char** argv){
         if(type == "OBJECTS") {
             while(ifs.good()){
                 ifs>>type;
-                Vector3f origin;
-                Color3f color;
-                float sRE, sRC, dRC, reflecC, refracC, rI, radius;
                 if(type == "SPHERE"){
+                    Vector3f origin;
+                    Color3f color;
+                    float sRE, sRC, dRC, reflecC, refracC, rI, radius;
                     while(ifs.good()){
                         ifs>>type;
                         if(type=="COLOR"){
@@ -197,20 +197,68 @@ int main(int argc, char** argv){
                             break;
                         }
                     }
+                    Material m;
+                    m.fillColor(color, sRE, sRC, dRC, reflecC, refracC, rI);
+                    Object* s = new Sphere(radius, origin, m);
+                    objects.push_back(s);
                 }
-                Material m;
-                m.fillColor(color, sRE, sRC, dRC, reflecC, refracC, rI);
-                Object* s = new Sphere(radius, origin, m);
-                objects.push_back(s);
+                if(type == "CONE"){
+                    Vector3f center, upVector;
+                    Color3f color;
+                    float sRE, sRC, dRC, reflecC, refracC, rI, alpha, height;
+                    while(ifs.good()){
+                        ifs>>type;
+                        if(type=="COLOR"){
+                            ifs>>color.r>>color.g>>color.b;
+                        }
+                        else if(type=="SPECULAR_REFLECTION_EXPONENT"){
+                            ifs>>sRE;
+                        }
+                        else if(type=="SPECULAR_REFLECTION_COEFF"){
+                            ifs>>sRC;
+                        }
+                        else if(type=="DIFFUSE_REFLECTION_COEFF"){
+                            ifs>>dRC;
+                        }
+                        else if(type=="REFLECTION_COEFF"){
+                            ifs>>reflecC;
+                        }
+                        else if(type=="REFRACTION_COEFF"){
+                            ifs>>refracC;
+                        }
+                        else if(type=="REFRACTIVE_INDEX"){
+                            ifs>>rI;
+                        }
+                        else if(type=="CENTER"){
+                            ifs>>center.x>>center.y>>center.z;
+                        }
+                        else if(type=="UPVECTOR"){
+                            ifs>>upVector.x>>upVector.y>>upVector.z;
+                        }
+                        else if(type=="ALPHA"){
+                            ifs>>alpha;
+                        }
+                        else if(type=="HEIGHT"){
+                            ifs>>height;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    Material m;
+                    m.fillColor(color, sRE, sRC, dRC, reflecC, refracC, rI);
+                    Object* c = new Cone(center, upVector, alpha, height, m);
+                    objects.push_back(c);
                 }
-            }
-            if(type == "CUT"){
-                break;
             }
         }
+        if(type == "CUT"){
+            break;
+        }
+    }
 
 
-    string fileName = "./figures/exp1/30.ppm";
+    string fileName = "./figures/exp1/31.ppm";
     Tracer rayTracer;
     
     rayTracer.writeImage(objects, lights, fileName, cam, false);
