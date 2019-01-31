@@ -157,7 +157,7 @@ int main(int argc, char** argv){
             }
             cam.formCamera(lookFrom, lookAt, viewUp, fov, width, height, sSampling, recursionDepth);
         }
-        if(type == "OBJECTS") {
+        if(type == "OBJECT") {
             while(ifs.good()){
                 ifs>>type;
                 if(type == "SPHERE"){
@@ -199,10 +199,10 @@ int main(int argc, char** argv){
                     }
                     Material m;
                     m.fillColor(color, sRE, sRC, dRC, reflecC, refracC, rI);
-                    Object* s = new Sphere(radius, origin, m);
+                    Object *s = new Sphere(radius, origin, m);
                     objects.push_back(s);
                 }
-                if(type == "CONE"){
+                else if(type == "CONE"){
                     Vector3f center, upVector;
                     Color3f color;
                     float sRE, sRC, dRC, reflecC, refracC, rI, alpha, height;
@@ -250,7 +250,7 @@ int main(int argc, char** argv){
                     Object* c = new Cone(center, upVector, alpha, height, m);
                     objects.push_back(c);
                 }
-                if(type == "PLANE"){
+                else if(type == "PLANE"){
                     Vector3f point1, point2, point3;
                     Color3f color;
                     float sRE, sRC, dRC, reflecC, refracC, rI;
@@ -295,8 +295,9 @@ int main(int argc, char** argv){
                     Object* p = new Plane(point1, point2, point3, m);
                     objects.push_back(p);
                 }
-                if(type == "BOX"){
+                else if(type == "BOX"){
                     Color3f color;
+                    Vector3f translate, scale;
                     float sRE, sRC, dRC, reflecC, refracC, rI;
                     while(ifs.good()){
                         ifs>>type;
@@ -321,13 +322,19 @@ int main(int argc, char** argv){
                         else if(type=="REFRACTIVE_INDEX"){
                             ifs>>rI;
                         }
+                        else if(type=="TRANSLATE"){
+                            ifs>>translate.x>>translate.y>>translate.z;
+                        }
+                        else if(type=="SCALE"){
+                            ifs>>scale.x>>scale.y>>scale.z;
+                        }
                         else {
                             break;
                         }
                     }
                     Material m;
                     m.fillColor(color, sRE, sRC, dRC, reflecC, refracC, rI);
-                    Object* b = new Box(m);
+                    Object* b = new Box(translate, scale, m);
                     objects.push_back(b);
                 }
                 else{
@@ -341,7 +348,7 @@ int main(int argc, char** argv){
     }
 
 
-    string fileName = "./figures/exp1/34.ppm";
+    string fileName = "./figures/exp1/41.ppm";
     Tracer rayTracer;
     
     rayTracer.writeImage(objects, lights, fileName, cam, false);

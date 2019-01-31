@@ -157,24 +157,13 @@ void Plane::print(){
 
 // -------------------------------Box----------------------------
 
-Box::Box(Material &m):Object(m){
+Box::Box(Vector3f &translate, Vector3f &scale, Material &m):Object(m){
+		Vector3f vt(0, 0, 0);
+		Vector3f v1 =  (vt)*scale + translate;
+		Vector3f v2 = (vt+1.0)*scale + translate;
 
-		// Transformation t;
-		// lenA = la; lenB = lb; lenC = lc;
-		// point = p;
-		// material = m;
-
-		// dirA = Vector3f(1.f,0.f,0.f);
-		// dirB = Vector3f(0.f,1.f,0.f);
-		// dirC = Vector3f(0.f,0.f,1.f);
-
-		// dirA_ = Vector3f(-1.f,0.f,0.f);
-		// dirB_ = Vector3f(0.f,-1.f,0.f);
-  // dirC_ = Vector3f(0.f,0.f,-1.f);
-
-		Vector3f v1(0, 0, 0), v2(1, 1, 1);
-		Vector3f n1(1, 0, 0), n2(0, 1, 0), n3(0, 0, 1);
-		Vector3f n4(-1, 0, 0), n5(0, -1, 0), n6(0, 0, -1);
+		Vector3f n1(-1, 0, 0), n2(0, -1, 0), n3(0, 0, -1);
+		Vector3f n4(1, 0, 0), n5(0, 1, 0), n6(0, 0, 1);
 		Plane p1(v1, n1, m), p2(v1, n2, m), p3(v1, n3, m);
 		Plane p4(v2, n4, m), p5(v2, n5, m), p6(v2, n6, m);
 
@@ -187,15 +176,15 @@ Box::Box(Material &m):Object(m){
 
 		Vector3f recentNormal(0.0, 0.0, 0.0);
 
-		Vector3f vp1(0, 0, 0), vp2(1, 1, 1);
-		boundPoints.push_back(vp1);
-		boundPoints.push_back(vp2);
+		boundPoints.push_back(v1);
+		boundPoints.push_back(v2);
 
 }
 
 
 bool Box::getIntersection(Ray3f &ray, float &t){
 	vector<tuple<float, int>> allParams;
+
 	for(int i=0; i<planes.size(); i++){
 		float t1;
 		if((planes.at(i)).getIntersection(ray, t1)){
@@ -205,40 +194,49 @@ bool Box::getIntersection(Ray3f &ray, float &t){
 		}	
 	}
 
+	if(allParams.size()==0){
+		return false;
+	}
 	// cout<<allParams.size();
 
 	int minIndex = numeric_limits<int>::max();
 	bool flag = false;
 	float minT = numeric_limits<float>::max();
+	vector<tuple<Vector3f, int>> interPointsList;
 	for(int i=0; i<allParams.size(); i++){
-		if(minT > get<0>(allParams.at(i)) && get<0>(allParams.at(i))>=0){
-			minT = get<0>(allParams.at(i));
-			minIndex = get<1>(allParams.at(i));
-			flag = true;
+
+		Vector3f interPoint = ray.origin + ray.direction*get<0>(allParams.at(i));
+
+		if((interPoint.x <= boundPoints[1].x && interPoint.x >= boundPoints[0].x) || (interPoint.x >= boundPoints[1].x && interPoint.x <= boundPoints[0].x)){
+		// 	cout<<"*";
+			if((interPoint.y <= boundPoints[1].y && interPoint.y >= boundPoints[0].y) || (interPoint.y >= boundPoints[1].y && interPoint.y <= boundPoints[0].y)){
+		// 		cout<<"+";
+				if((interPoint.z <= boundPoints[1].z && interPoint.z >= boundPoints[0].z) || (interPoint.z >= boundPoints[1].z && interPoint.z <= boundPoints[0].z)){
+				// 	cout<<"l/"<<endl;
+					interPointsList.push_back(make_tuple(interPoint, i));
+					// cout<<flag;	
+				}
+			}
 		}
 	}
 
-	if(flag){
-		t = minT;
-		Vector3f interPoint = ray.origin + ray.direction*minT;
-
-		// if((interPoint.x <= boundPoints[1].x && interPoint.x >= boundPoints[0].x) || (interPoint.x >= boundPoints[1].x && interPoint.x <= boundPoints[0].x)){
-		// 	cout<<"*";
-		// 	if((interPoint.y <= boundPoints[1].y && interPoint.y >= boundPoints[0].y) || (interPoint.y >= boundPoints[1].y && interPoint.y <= boundPoints[0].y)){
-		// 		cout<<"+";
-				// if((interPoint.z <= boundPoints[1].z && interPoint.z >= boundPoints[0].z) || (interPoint.z >= boundPoints[1].z && interPoint.z <= boundPoints[0].z)){
-				// 	cout<<"l/"<<endl;
-					recentNormal = planes[minIndex].getNormalOnIntersectionPoint(interPoint, ray);
-					cout<<flag;
-					return true;
-				// }
-
-		// 	}
-
-		// }
+	if(interPointsList.size()==0){
+		return false;
 	}
 
-	return false;
+	float dist = numeric_limits<float>::max();
+	int minDistIndex = 0;
+
+	for(int i=0; i<interPointsList.size(); i++){
+		if((ray.origin).lengthFrom(get<0>(interPointsList.at(i))) < dist){
+			dist = (ray.origin).lengthFrom(get<0>(interPointsList.at(i)));
+			minDistIndex = i;
+		}
+	}
+
+	recentNormal = planes[get<1>(interPointsList.at(minDistIndex))].getNormalOnIntersectionPoint(get<0>(interPointsList.at(minDistIndex)), ray);
+
+	return true;
 }
 
 Vector3f Box::getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray){

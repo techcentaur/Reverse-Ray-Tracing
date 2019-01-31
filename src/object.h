@@ -59,6 +59,7 @@ public:
 
 };
 
+
 class Box : public Object{
 
 public:
@@ -71,7 +72,7 @@ public:
 	vector<Vector3f> boundPoints;
 	
 	Box();
-	Box(Material &m);
+	Box(Vector3f &translate, Vector3f &scale, Material &m);
 	
 	bool getIntersection(Ray3f &ray, float &t);
 	Vector3f getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray);
