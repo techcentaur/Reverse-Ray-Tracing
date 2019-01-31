@@ -250,6 +250,54 @@ int main(int argc, char** argv){
                     Object* c = new Cone(center, upVector, alpha, height, m);
                     objects.push_back(c);
                 }
+                if(type == "PLANE"){
+                    Vector3f point1, point2, point3;
+                    Color3f color;
+                    float sRE, sRC, dRC, reflecC, refracC, rI;
+                    while(ifs.good()){
+                        ifs>>type;
+                        if(type=="COLOR"){
+                            ifs>>color.r>>color.g>>color.b;
+                        }
+                        else if(type=="SPECULAR_REFLECTION_EXPONENT"){
+                            ifs>>sRE;
+                        }
+                        else if(type=="SPECULAR_REFLECTION_COEFF"){
+                            ifs>>sRC;
+                        }
+                        else if(type=="DIFFUSE_REFLECTION_COEFF"){
+                            ifs>>dRC;
+                        }
+                        else if(type=="REFLECTION_COEFF"){
+                            ifs>>reflecC;
+                        }
+                        else if(type=="REFRACTION_COEFF"){
+                            ifs>>refracC;
+                        }
+                        else if(type=="REFRACTIVE_INDEX"){
+                            ifs>>rI;
+                        }
+                        else if(type=="POINT1"){
+                            ifs>>point1.x>>point1.y>>point1.z;
+                        }
+                        else if(type=="POINT2"){
+                            ifs>>point2.x>>point2.y>>point2.z;
+                        }
+                        else if(type=="POINT3"){
+                            ifs>>point3.x>>point3.y>>point3.z;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    Material m;
+                    m.fillColor(color, sRE, sRC, dRC, reflecC, refracC, rI);
+                    Object* p = new Plane(point1, point2, point3, m);
+                    objects.push_back(p);
+                }
+                else{
+                    break;
+                }
             }
         }
         if(type == "CUT"){
@@ -258,7 +306,7 @@ int main(int argc, char** argv){
     }
 
 
-    string fileName = "./figures/exp1/31.ppm";
+    string fileName = "./figures/exp1/32.ppm";
     Tracer rayTracer;
     
     rayTracer.writeImage(objects, lights, fileName, cam, false);
