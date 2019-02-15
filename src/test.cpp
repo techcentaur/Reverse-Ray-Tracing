@@ -1,22 +1,48 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-
-#include "color.h"
+#include <iostream>
+#include <vector>
+#include <cmath>
+// #include <GL/glut.h>
 #include "vector.h"
 #include "transformation.h"
-#include "box.h"
-#include "material.h"
+
 using namespace std;
+ 
+void displayMe(void)
+{
+    // glClear(GL_COLOR_BUFFER_BIT);
+    // glBegin(GL_POLYGON);
+    //     glVertex3f(0.5, 0.0, 0.5);
+    //     glVertex3f(0.5, 0.0, 0.0);
+    //     glVertex3f(0.0, 0.5, 0.0);
+    //     glVertex3f(0.0, 0.0, 0.5);
+    // glEnd();
+    // glFlush();
+}
+ 
+int main(int argc, char** argv)
+{
+    // glutInit(&argc, argv);
+    // glutInitDisplayMode(GLUT_SINGLE);
+    // glutInitWindowSize(400, 300);
+    // glutInitWindowPosition(100, 100);
+    // glutCreateWindow("Hello world!");
+    // glutDisplayFunc(displayMe);
+    // glutMainLoop();
 
-int main(){
-          // Vector3f c(0.5,1.f,1.5);
 
-          // Color3f c1(0.3, 0.8, 0.7);
-          // Material m1;
-          // m1.fillColor(c1, 20.f, 1, 0.1, 0.5);
-          
-          // cout<<cos(-M_PI_2);
-          // Box b(1.f, 2.f, 3.f,c,m1);
-          // b.print();
+    Vector3f c(1.f,1.f,1.f);
+    
+    Transformation t;
+    Vector3f rxy(t.shearingXAboutY(c,1));
+    Vector3f rxy_(t.shearingXAboutY(c,-1));
+    Vector3f ryz(t.shearingYAboutZ(c,2));
+
+    rxy.print();
+    rxy_.print();
+    ryz.print();
+
+    return 0;
 }
