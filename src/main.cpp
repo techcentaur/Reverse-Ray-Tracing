@@ -95,7 +95,7 @@ int main(int argc, char** argv){
     // Vector3f camLookFrom(0, 0, 0), camLookAt(0, 0, -1), camViewUp(1, 0, 0);
     // Camera cam(camLookFrom, camLookAt, camViewUp, 60, float(width), float(height), sSampling, recursionDepth);
 
-    string sName = "./config";
+    string sName = "./inputsample";
 
     ifstream ifs;
     ifs.open(sName, ios::in);
@@ -348,7 +348,7 @@ int main(int argc, char** argv){
     }
 
 
-    string fileName = "./figures/exp1/hardik.ppm";
+    string fileName = "./figures/exp1/100.ppm";
     Tracer rayTracer;
     
     rayTracer.writeImage(objects, lights, fileName, cam, false);
