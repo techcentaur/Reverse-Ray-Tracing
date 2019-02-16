@@ -161,9 +161,19 @@ Box::Box(Vector3f &translate, Vector3f &scale, Material &m):Object(m){
 		Vector3f vt(0, 0, 0);
 		Vector3f v1 =  (vt)*scale + translate;
 		Vector3f v2 = (vt+1.0)*scale + translate;
-
+		
 		Vector3f n1(-1, 0, 0), n2(0, -1, 0), n3(0, 0, -1);
 		Vector3f n4(1, 0, 0), n5(0, 1, 0), n6(0, 0, 1);
+		
+
+		// Transformation t;
+		// v2 = t.shearingYAboutX(v2,1);
+		// n1 = t.rotateAboutY(n1,-45);
+		// n4 = t.rotateAboutY(n4,-45);
+		// v2.print();
+		// n1.print();
+		// n4.print();
+
 		Plane p1(v1, n1, m), p2(v1, n2, m), p3(v1, n3, m);
 		Plane p4(v2, n4, m), p5(v2, n5, m), p6(v2, n6, m);
 
