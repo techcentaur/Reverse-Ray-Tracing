@@ -122,29 +122,6 @@ Vector3f Plane::getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray){
 	return this->normal;
 }
 
-// void Plane::translation(const Vector3f &vec){
-// 	point = point + vec;
-// 	bound[0] += vec.x; bound[2] += vec.y; bound[4] += vec.z;
-// 	bound[1] += vec.x; bound[3] += vec.y; bound[5] += vec.z;
-// }
-
-// void rotateAboutX(float angle){
-// 	Transformation t;
-// 	Vector3f new_normal = t.rotateAboutX(normal, angle);
-// 	normal = new_normal;
-// }
-
-// void rotateAboutY(float angle){
-// 	Transformation t;
-// 	Vector3f new_normal = t.rotateAboutY(normal, angle);
-// 	normal = new_normal;
-// }
-// void rotateAboutZ(float angle){
-// 	Transformation t;
-// 	Vector3f new_normal = t.rotateAboutZ(normal, angle);
-// 	normal = new_normal;
-// }
-
 void Plane::print(){
 	cout<<"[*] Plane: \n";
 	cout<<"Point: "; point.print();
