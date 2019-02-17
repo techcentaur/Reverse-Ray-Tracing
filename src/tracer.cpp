@@ -33,8 +33,9 @@ bool Tracer::SceneRayCasting(Ray3f &ray, vector<Object*> objectList, Vector3f &i
             maxDistance = closestIntersection;
             // don't need intersection point and normal vector: Fuuction will do the work (call by reference)
 
-            iPoint = ray.origin + ray.direction*closestIntersection;
-            nVector = objectList.at(i)->getNormalOnIntersectionPoint(iPoint, ray);
+            // iPoint = ray.origin + ray.direction*closestIntersection;
+            iPoint = objectList.at(i)->getIntersectionPoint();
+            nVector = objectList.at(i)->getNormalOnIntersectionPoint();
 
             iMaterial = objectList.at(i)->material;
         }

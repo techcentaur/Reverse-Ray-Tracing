@@ -95,7 +95,7 @@ int main(int argc, char** argv){
     // Vector3f camLookFrom(0, 0, 0), camLookAt(0, 0, -1), camViewUp(1, 0, 0);
     // Camera cam(camLookFrom, camLookAt, camViewUp, 60, float(width), float(height), sSampling, recursionDepth);
 
-    string sName = "./config";
+    string sName = "./inputsample";
 
     ifstream ifs;
     ifs.open(sName, ios::in);
@@ -202,54 +202,54 @@ int main(int argc, char** argv){
                     Object *s = new Sphere(radius, origin, m);
                     objects.push_back(s);
                 }
-                else if(type == "CONE"){
-                    Vector3f center, upVector;
-                    Color3f color;
-                    float sRE, sRC, dRC, reflecC, refracC, rI, alpha, height;
-                    while(ifs.good()){
-                        ifs>>type;
-                        if(type=="COLOR"){
-                            ifs>>color.r>>color.g>>color.b;
-                        }
-                        else if(type=="SPECULAR_REFLECTION_EXPONENT"){
-                            ifs>>sRE;
-                        }
-                        else if(type=="SPECULAR_REFLECTION_COEFF"){
-                            ifs>>sRC;
-                        }
-                        else if(type=="DIFFUSE_REFLECTION_COEFF"){
-                            ifs>>dRC;
-                        }
-                        else if(type=="REFLECTION_COEFF"){
-                            ifs>>reflecC;
-                        }
-                        else if(type=="REFRACTION_COEFF"){
-                            ifs>>refracC;
-                        }
-                        else if(type=="REFRACTIVE_INDEX"){
-                            ifs>>rI;
-                        }
-                        else if(type=="CENTER"){
-                            ifs>>center.x>>center.y>>center.z;
-                        }
-                        else if(type=="UPVECTOR"){
-                            ifs>>upVector.x>>upVector.y>>upVector.z;
-                        }
-                        else if(type=="ALPHA"){
-                            ifs>>alpha;
-                        }
-                        else if(type=="HEIGHT"){
-                            ifs>>height;
-                        }
-                        else {
-                            break;
-                        }
-                    }
-                    Material m;
-                    m.fillColor(color, sRE, sRC, dRC, reflecC, refracC, rI);
-                    Object* c = new Cone(center, upVector, alpha, height, m);
-                    objects.push_back(c);
-                }
+                // else if(type == "CONE"){
+                //     Vector3f center, upVector;
+                //     Color3f color;
+                //     float sRE, sRC, dRC, reflecC, refracC, rI, alpha, height;
+                //     while(ifs.good()){
+                //         ifs>>type;
+                //         if(type=="COLOR"){
+                //             ifs>>color.r>>color.g>>color.b;
+                //         }
+                //         else if(type=="SPECULAR_REFLECTION_EXPONENT"){
+                //             ifs>>sRE;
+                //         }
+                //         else if(type=="SPECULAR_REFLECTION_COEFF"){
+                //             ifs>>sRC;
+                //         }
+                //         else if(type=="DIFFUSE_REFLECTION_COEFF"){
+                //             ifs>>dRC;
+                //         }
+                //         else if(type=="REFLECTION_COEFF"){
+                //             ifs>>reflecC;
+                //         }
+                //         else if(type=="REFRACTION_COEFF"){
+                //             ifs>>refracC;
+                //         }
+                //         else if(type=="REFRACTIVE_INDEX"){
+                //             ifs>>rI;
+                //         }
+                //         else if(type=="CENTER"){
+                //             ifs>>center.x>>center.y>>center.z;
+                //         }
+                //         else if(type=="UPVECTOR"){
+                //             ifs>>upVector.x>>upVector.y>>upVector.z;
+                //         }
+                //         else if(type=="ALPHA"){
+                //             ifs>>alpha;
+                //         }
+                //         else if(type=="HEIGHT"){
+                //             ifs>>height;
+                //         }
+                //         else {
+                //             break;
+                //         }
+                //     }
+                //     Material m;
+                //     m.fillColor(color, sRE, sRC, dRC, reflecC, refracC, rI);
+                //     Object* c = new Cone(center, upVector, alpha, height, m);
+                //     objects.push_back(c);
+                // }
                 else if(type == "PLANE"){
                     Vector3f point1, point2, point3;
                     Color3f color;
@@ -295,48 +295,48 @@ int main(int argc, char** argv){
                     Object* p = new Plane(point1, point2, point3, m);
                     objects.push_back(p);
                 }
-                else if(type == "BOX"){
-                    Color3f color;
-                    Vector3f translate, scale;
-                    float sRE, sRC, dRC, reflecC, refracC, rI;
-                    while(ifs.good()){
-                        ifs>>type;
-                        if(type=="COLOR"){
-                            ifs>>color.r>>color.g>>color.b;
-                        }
-                        else if(type=="SPECULAR_REFLECTION_EXPONENT"){
-                            ifs>>sRE;
-                        }
-                        else if(type=="SPECULAR_REFLECTION_COEFF"){
-                            ifs>>sRC;
-                        }
-                        else if(type=="DIFFUSE_REFLECTION_COEFF"){
-                            ifs>>dRC;
-                        }
-                        else if(type=="REFLECTION_COEFF"){
-                            ifs>>reflecC;
-                        }
-                        else if(type=="REFRACTION_COEFF"){
-                            ifs>>refracC;
-                        }
-                        else if(type=="REFRACTIVE_INDEX"){
-                            ifs>>rI;
-                        }
-                        else if(type=="TRANSLATE"){
-                            ifs>>translate.x>>translate.y>>translate.z;
-                        }
-                        else if(type=="SCALE"){
-                            ifs>>scale.x>>scale.y>>scale.z;
-                        }
-                        else {
-                            break;
-                        }
-                    }
-                    Material m;
-                    m.fillColor(color, sRE, sRC, dRC, reflecC, refracC, rI);
-                    Object* b = new Box(translate, scale, m);
-                    objects.push_back(b);
-                }
+                // else if(type == "BOX"){
+                //     Color3f color;
+                //     Vector3f translate, scale;
+                //     float sRE, sRC, dRC, reflecC, refracC, rI;
+                //     while(ifs.good()){
+                //         ifs>>type;
+                //         if(type=="COLOR"){
+                //             ifs>>color.r>>color.g>>color.b;
+                //         }
+                //         else if(type=="SPECULAR_REFLECTION_EXPONENT"){
+                //             ifs>>sRE;
+                //         }
+                //         else if(type=="SPECULAR_REFLECTION_COEFF"){
+                //             ifs>>sRC;
+                //         }
+                //         else if(type=="DIFFUSE_REFLECTION_COEFF"){
+                //             ifs>>dRC;
+                //         }
+                //         else if(type=="REFLECTION_COEFF"){
+                //             ifs>>reflecC;
+                //         }
+                //         else if(type=="REFRACTION_COEFF"){
+                //             ifs>>refracC;
+                //         }
+                //         else if(type=="REFRACTIVE_INDEX"){
+                //             ifs>>rI;
+                //         }
+                //         else if(type=="TRANSLATE"){
+                //             ifs>>translate.x>>translate.y>>translate.z;
+                //         }
+                //         else if(type=="SCALE"){
+                //             ifs>>scale.x>>scale.y>>scale.z;
+                //         }
+                //         else {
+                //             break;
+                //         }
+                //     }
+                //     Material m;
+                //     m.fillColor(color, sRE, sRC, dRC, reflecC, refracC, rI);
+                //     Object* b = new Box(translate, scale, m);
+                //     objects.push_back(b);
+                // }
                 else{
                     break;
                 }
@@ -348,7 +348,7 @@ int main(int argc, char** argv){
     }
 
 
-    string fileName = "./figures/exp1/hardik.ppm";
+    string fileName = "./figures/exp1/101.ppm";
     Tracer rayTracer;
     
     rayTracer.writeImage(objects, lights, fileName, cam, false);

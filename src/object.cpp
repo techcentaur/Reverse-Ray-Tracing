@@ -24,10 +24,49 @@ bool Sphere::getIntersection(Ray3f &ray, float &t0){
 
 	Vector3f v(0, 0, 0);
 
-	// parametric method
-	Vector3f line = (center - ray.origin);
+	// let M be transformation matrix and d be displacement
+	// old ray = r1 + r2t
+	// new ray = (r1-d)Minv + cMinvt 
 
-	float lineProjection = line.dot(ray.direction);
+	vector<vector<float>> M;
+	M.assign(3, vector<float>(3,0));
+	for (int i=0; i<3; i++) M[i][i] = 0;
+	M[0][0] = 2;
+	M[0][1] = 0;
+	M[0][2] = 0;
+	M[1][1] = 2;
+	M[1][0] = 0;
+	M[1][2] = 0;
+	M[2][0] = 0;
+	M[2][1] = 0;
+	M[2][2] = 2;
+
+	vector<vector<float>> Minv = getInverseMatrix(M);
+
+	// for(int i=0; i<Minv.size(); i++){
+	// for(int j=0; j<Minv[i].size(); j++){
+	// 	cout<<Minv[i][j]<<" ";
+	// 	}
+	// 	cout<<endl;	
+	// }
+
+	Vector3f d(0, 0, 0);
+
+	Ray3f newRay;
+
+	Vector3f temp = ray.origin - d;
+	Vector3f temp2(Minv[0][0]*temp.x + Minv[0][1]*temp.y + Minv[0][2]*temp.z, Minv[1][0]*temp.x + Minv[1][1]*temp.y + Minv[1][2]*temp.z, Minv[2][0]*temp.x + Minv[2][1]*temp.y + Minv[2][2]*temp.z);
+
+	temp = ray.direction;
+	Vector3f temp3(Minv[0][0]*temp.x + Minv[0][1]*temp.y + Minv[0][2]*temp.z , Minv[1][0]*temp.x + Minv[1][1]*temp.y + Minv[1][2]*temp.z, Minv[2][0]*temp.x + Minv[2][1]*temp.y + Minv[2][2]*temp.z);
+	
+	temp3.normalize();
+	newRay.createRay(temp2, temp3, true);
+
+	// parametric method
+	Vector3f line = (center - newRay.origin);
+
+	float lineProjection = line.dot(newRay.direction);
 	float dist2 = line.dot(line) - lineProjection*lineProjection;
 	
 	if(dist2>radius*radius) return false;
@@ -36,26 +75,54 @@ bool Sphere::getIntersection(Ray3f &ray, float &t0){
 	t0 = lineProjection-projection2;
 	
 	float t1 = lineProjection + projection2;
-	float temp;
+	float temp_;
 	if(t0>=0){
-		temp = t0;
+		temp_ = t0;
 		t0 = t1;
 	}else{
 		 return false;
 	} 
 
-	t1 = temp;
+	t1 = temp_;
+	
+	recentIntersectionPoint = newRay.origin + newRay.direction*t0;
+	
+	if((newRay.origin).lengthFrom(this->center) < radius){
+		recentNormal = (this->center - recentIntersectionPoint).normalizeIt();	
+	}
+	else{
+		recentNormal = (recentIntersectionPoint - this->center).normalizeIt();
+	}
 
 	return true;
 }
-
-Vector3f Sphere::getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray){
-	if((ray.origin).lengthFrom(this->center) < radius){
-		return (this->center - point).normalizeIt();	
-	}
-	return (point - this->center).normalizeIt();
+Vector3f Sphere::getIntersectionPoint(){
+	return recentIntersectionPoint;
 }
 
+Vector3f Sphere::getNormalOnIntersectionPoint(){
+	return recentNormal;
+}
+
+vector<vector<float>> Sphere::getInverseMatrix(vector<vector<float>> mat){
+	vector<vector<float>> resultMat;
+	int i,j;
+	resultMat.assign(3, vector<float>(3,0));
+	for (int i=0; i<3; i++) resultMat[i][i] = 0;
+
+	float determinant = 0;
+	//finding determinant
+	for(i = 0; i < mat.size(); i++){
+		determinant = determinant + (mat[0][i] * (mat[1][(i+1)%3] * mat[2][(i+2)%3] - mat[1][(i+2)%3] * mat[2][(i+1)%3]));
+	}
+
+	for(i = 0; i < 3; i++){
+		for(j = 0; j < 3; j++)
+			resultMat[i][j] = ((mat[(j+1)%3][(i+1)%3] * mat[(j+2)%3][(i+2)%3]) - (mat[(j+1)%3][(i+2)%3] * mat[(j+2)%3][(i+1)%3]))/ determinant;
+	}
+ 
+   return resultMat;
+}
 
 void Sphere::print(){
 	cout<<"[*] Sphere: \n";
@@ -153,12 +220,17 @@ bool Plane::getIntersection(Ray3f &ray, float &t){
 				return true;
 			}
 	}
+	recentIntersectionPoint = ray.origin + ray.direction*t;
 
 	t = 0.f;
 	return false;
 }
 
-Vector3f Plane::getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray){
+Vector3f Plane::getIntersectionPoint(){
+	return recentIntersectionPoint;
+}
+
+Vector3f Plane::getNormalOnIntersectionPoint(){
 	return this->normal;
 }
 
@@ -172,188 +244,191 @@ void Plane::print(){
 // ------------------------------Plane---------------------------
 
 
-// -------------------------------Box----------------------------
+// // -------------------------------Box----------------------------
 
-Box::Box(Vector3f &translate, Vector3f &scale, Material &m):Object(m){
-		Vector3f vt(0, 0, 0);
-		Vector3f v1 =  (vt)*scale + translate;
-		Vector3f v2 = (vt+1.0)*scale + translate;
+// Box::Box(Vector3f &translate, Vector3f &scale, Material &m):Object(m){
+
+// 		// center; lbh
+// 		Vector3f vt(0, 0, 0); // reference coordianate
+// 		// scale and translate
+// 		Vector3f v1 =  (vt)*scale + translate; 
+// 		Vector3f v2 = (vt+1.0)*scale + translate;
 		
-		Vector3f n1(-1, 0, 0), n2(0, -1, 0), n3(0, 0, -1);
-		Vector3f n4(1, 0, 0), n5(0, 1, 0), n6(0, 0, 1);
-		
+// 		// create normals
+// 		Vector3f n1(-1, 0, 0), n2(0, -1, 0), n3(0, 0, -1);
+// 		Vector3f n4(1, 0, 0), n5(0, 1, 0), n6(0, 0, 1);
 
-		// Transformation t;
-		// v2 = t.shearingYAboutX(v2,1);
-		// n1 = t.rotateAboutY(n1,-45);
-		// n4 = t.rotateAboutY(n4,-45);
-		// v2.print();
-		// n1.print();
-		// n4.print();
+// 		// Transformation t;
+// 		// v2 = t.shearingYAboutX(v2,1);
+// 		// n1 = t.rotateAboutY(n1,-45);
+// 		// n4 = t.rotateAboutY(n4,-45);
+// 		// v2.print();
+// 		// n1.print();
+// 		// n4.print();
 
-		Plane p1(v1, n1, m), p2(v1, n2, m), p3(v1, n3, m);
-		Plane p4(v2, n4, m), p5(v2, n5, m), p6(v2, n6, m);
+// 		// create all side planes
+// 		Plane p1(v1, n1, m), p2(v1, n2, m), p3(v1, n3, m);
+// 		Plane p4(v2, n4, m), p5(v2, n5, m), p6(v2, n6, m);
 
-		planes.push_back(p1);
-		planes.push_back(p2);
-		planes.push_back(p3);
-		planes.push_back(p4);
-		planes.push_back(p5);
-		planes.push_back(p6);
+// 		planes.push_back(p1);
+// 		planes.push_back(p2);
+// 		planes.push_back(p3);
+// 		planes.push_back(p4);
+// 		planes.push_back(p5);
+// 		planes.push_back(p6);
 
-		Vector3f recentNormal(0.0, 0.0, 0.0);
+// 		Vector3f recentNormal(0.0, 0.0, 0.0);
 
-		boundPoints.push_back(v1);
-		boundPoints.push_back(v2);
-
-}
-
-
-bool Box::getIntersection(Ray3f &ray, float &t){
-	vector<tuple<float, int>> allParams;
-
-	for(int i=0; i<planes.size(); i++){
-		float t1;
-		if((planes.at(i)).getIntersection(ray, t1)){
-            // Vector3f iPoint = ray.origin + ray.direction*t1;
-            // Vector3f nVector = (planes.at(i)).getNormalOnIntersectionPoint(iPoint, ray);
-			allParams.push_back(make_tuple(t1, i));
-		}	
-	}
-
-	if(allParams.size()==0){
-		return false;
-	}
-	// cout<<allParams.size();
-
-	int minIndex = numeric_limits<int>::max();
-	bool flag = false;
-	float minT = numeric_limits<float>::max();
-	vector<tuple<Vector3f, int>> interPointsList;
-	for(int i=0; i<allParams.size(); i++){
-
-		Vector3f interPoint = ray.origin + ray.direction*get<0>(allParams.at(i));
-
-		if((interPoint.x <= boundPoints[1].x && interPoint.x >= boundPoints[0].x) || (interPoint.x >= boundPoints[1].x && interPoint.x <= boundPoints[0].x)){
-		// 	cout<<"*";
-			if((interPoint.y <= boundPoints[1].y && interPoint.y >= boundPoints[0].y) || (interPoint.y >= boundPoints[1].y && interPoint.y <= boundPoints[0].y)){
-		// 		cout<<"+";
-				if((interPoint.z <= boundPoints[1].z && interPoint.z >= boundPoints[0].z) || (interPoint.z >= boundPoints[1].z && interPoint.z <= boundPoints[0].z)){
-				// 	cout<<"l/"<<endl;
-					interPointsList.push_back(make_tuple(interPoint, i));
-					// cout<<flag;	
-				}
-			}
-		}
-	}
-
-	if(interPointsList.size()==0){
-		return false;
-	}
-
-	float dist = numeric_limits<float>::max();
-	int minDistIndex = 0;
-
-	for(int i=0; i<interPointsList.size(); i++){
-		if((ray.origin).lengthFrom(get<0>(interPointsList.at(i))) < dist){
-			dist = (ray.origin).lengthFrom(get<0>(interPointsList.at(i)));
-			minDistIndex = i;
-		}
-	}
-
-	recentNormal = planes[get<1>(interPointsList.at(minDistIndex))].getNormalOnIntersectionPoint(get<0>(interPointsList.at(minDistIndex)), ray);
-
-	return true;
-}
-
-Vector3f Box::getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray){
-	return recentNormal;
-}
-
-void Box::print(){
-	cout<<"Not implemented"<<endl;
-}
-// -------------------------------Box----------------------------
+// 		boundPoints.push_back(v1);
+// 		boundPoints.push_back(v2);
+// }
 
 
+// bool Box::getIntersection(Ray3f &ray, float &t){
+// 	vector<tuple<float, int>> allParams;
 
-//--------------------------------Cone----------------------------------
+// 	for(int i=0; i<planes.size(); i++){
+// 		float t1;
+// 		if((planes.at(i)).getIntersection(ray, t1)){
+//             // Vector3f iPoint = ray.origin + ray.direction*t1;
+//             // Vector3f nVector = (planes.at(i)).getNormalOnIntersectionPoint(iPoint, ray);
+// 			allParams.push_back(make_tuple(t1, i));
+// 		}	
+// 	}
 
-Cone::Cone(Vector3f c, Vector3f uV, float a, float h, Material &m):Object(m) {
-	center = c;
-	upVector = uV.normalizeIt();
-	alpha = a;
-	radius = h * tan(a);
-	height = h;
-}
+// 	if(allParams.size()==0){
+// 		return false;
+// 	}
+// 	// cout<<allParams.size();
+
+// 	int minIndex = numeric_limits<int>::max();
+// 	bool flag = false;
+// 	float minT = numeric_limits<float>::max();
+// 	vector<tuple<Vector3f, int>> interPointsList;
+// 	for(int i=0; i<allParams.size(); i++){
+
+// 		Vector3f interPoint = ray.origin + ray.direction*get<0>(allParams.at(i));
+
+// 		if((interPoint.x <= boundPoints[1].x && interPoint.x >= boundPoints[0].x) || (interPoint.x >= boundPoints[1].x && interPoint.x <= boundPoints[0].x)){
+// 		// 	cout<<"*";
+// 			if((interPoint.y <= boundPoints[1].y && interPoint.y >= boundPoints[0].y) || (interPoint.y >= boundPoints[1].y && interPoint.y <= boundPoints[0].y)){
+// 		// 		cout<<"+";
+// 				if((interPoint.z <= boundPoints[1].z && interPoint.z >= boundPoints[0].z) || (interPoint.z >= boundPoints[1].z && interPoint.z <= boundPoints[0].z)){
+// 				// 	cout<<"l/"<<endl;
+// 					interPointsList.push_back(make_tuple(interPoint, i));
+// 					// cout<<flag;	
+// 				}
+// 			}
+// 		}
+// 	}
+
+// 	if(interPointsList.size()==0){
+// 		return false;
+// 	}
+
+// 	float dist = numeric_limits<float>::max();
+// 	int minDistIndex = 0;
+
+// 	for(int i=0; i<interPointsList.size(); i++){
+// 		if((ray.origin).lengthFrom(get<0>(interPointsList.at(i))) < dist){
+// 			dist = (ray.origin).lengthFrom(get<0>(interPointsList.at(i)));
+// 			minDistIndex = i;
+// 		}
+// 	}
+
+// 	recentNormal = planes[get<1>(interPointsList.at(minDistIndex))].getNormalOnIntersectionPoint(get<0>(interPointsList.at(minDistIndex)), ray);
+
+// 	return true;
+// }
+
+// Vector3f Box::getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray){
+// 	return recentNormal;
+// }
+
+// void Box::print(){
+// 	cout<<"Not implemented"<<endl;
+// }
+// // -------------------------------Box----------------------------
 
 
-bool Cone::getIntersection(Ray3f &ray, float &t) {
-	vector<float> intersectionPointsParams;
 
-	float cos2Alpha = cos(alpha)*cos(alpha);
-	float sin2Alpha = 1 - cos2Alpha;
+// //--------------------------------Cone----------------------------------
 
-	Vector3f apexVector = center + upVector * height;
-	Vector3f downVector = upVector * -1;
-	Vector3f deltaP = (ray.origin - apexVector);
+// Cone::Cone(Vector3f c, Vector3f uV, float a, float h, Material &m):Object(m) {
+// 	center = c;
+// 	upVector = uV.normalizeIt();
+// 	alpha = a;
+// 	radius = h * tan(a);
+// 	height = h;
+// }
 
-	float projec1 = ray.direction.dot(downVector);
-	Vector3f vec1 = downVector*projec1;
-	float projec2 = deltaP.dot(downVector);
-	Vector3f vec2 = downVector*projec2;
 
-	float a = cos2Alpha*((ray.direction - vec1).lengthSquare()) - sin2Alpha*projec1*projec1;
-	float b = 2*cos2Alpha*((ray.direction - vec1).dot(deltaP - vec2)) - 2 * sin2Alpha*(projec1*projec2);
-	float c = cos2Alpha*((deltaP - vec2).lengthSquare()) - sin2Alpha*(projec2*projec2);
+// bool Cone::getIntersection(Ray3f &ray, float &t) {
+// 	vector<float> intersectionPointsParams;
 
-	float discriminant = b*b - 4*a*c;
-	if (discriminant < 0) return false;
-	else {
-		discriminant = sqrt(discriminant);
-		float t1 = ((-1*b) + discriminant)/(2*a);
-		float t2 = ((-1*b) - discriminant)/(2*a);
-		if(t1>=0){
-			if(upVector.dot((ray.origin - center) + ray.direction*t1)>0 && upVector.dot((ray.origin - apexVector) + ray.direction*t1)<0)
-				intersectionPointsParams.push_back(t1);
-		}
-		if(t2>=0)
-			if(upVector.dot((ray.origin - center) + ray.direction*t2)>0 && upVector.dot((ray.origin - apexVector) + ray.direction*t2)<0)
-				intersectionPointsParams.push_back(t2);
-	}
+// 	float cos2Alpha = cos(alpha)*cos(alpha);
+// 	float sin2Alpha = 1 - cos2Alpha;
 
-	float denominator = (ray.direction).dot(upVector);
-	if (denominator > 1e-6) {
-		Vector3f co = center - ray.origin;
-		float t3 = co.dot(upVector)/denominator;
-		if(t3 > 0 && (ray.direction*t3 - co).lengthSquare() <= radius*radius)
-			intersectionPointsParams.push_back(t3);
-	}
+// 	Vector3f apexVector = center + upVector * height;
+// 	Vector3f downVector = upVector * -1;
+// 	Vector3f deltaP = (ray.origin - apexVector);
 
-	float minParam = INFINITY;
-	bool flag = false;
-	for(int i=0;i<intersectionPointsParams.size();i++){
-		if(minParam > intersectionPointsParams[i] && intersectionPointsParams[i]>=0) {
-			minParam = intersectionPointsParams[i];
-			flag = true;
-		}
-	}
-	if(flag){ t = minParam; return true;}
-	else return false;
-}
+// 	float projec1 = ray.direction.dot(downVector);
+// 	Vector3f vec1 = downVector*projec1;
+// 	float projec2 = deltaP.dot(downVector);
+// 	Vector3f vec2 = downVector*projec2;
 
-Vector3f Cone::getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray){
+// 	float a = cos2Alpha*((ray.direction - vec1).lengthSquare()) - sin2Alpha*projec1*projec1;
+// 	float b = 2*cos2Alpha*((ray.direction - vec1).dot(deltaP - vec2)) - 2 * sin2Alpha*(projec1*projec2);
+// 	float c = cos2Alpha*((deltaP - vec2).lengthSquare()) - sin2Alpha*(projec2*projec2);
 
-	if(abs((point - center).dot(upVector)) < 1e-4){
-		return upVector*(-1);
-	}
+// 	float discriminant = b*b - 4*a*c;
+// 	if (discriminant < 0) return false;
+// 	else {
+// 		discriminant = sqrt(discriminant);
+// 		float t1 = ((-1*b) + discriminant)/(2*a);
+// 		float t2 = ((-1*b) - discriminant)/(2*a);
+// 		if(t1>=0){
+// 			if(upVector.dot((ray.origin - center) + ray.direction*t1)>0 && upVector.dot((ray.origin - apexVector) + ray.direction*t1)<0)
+// 				intersectionPointsParams.push_back(t1);
+// 		}
+// 		if(t2>=0)
+// 			if(upVector.dot((ray.origin - center) + ray.direction*t2)>0 && upVector.dot((ray.origin - apexVector) + ray.direction*t2)<0)
+// 				intersectionPointsParams.push_back(t2);
+// 	}
 
-	Vector3f top = center + upVector * height;
-	Vector3f perpendicularVec = (upVector * -1).cross((upVector * -1), point - top);
+// 	float denominator = (ray.direction).dot(upVector);
+// 	if (denominator > 1e-6) {
+// 		Vector3f co = center - ray.origin;
+// 		float t3 = co.dot(upVector)/denominator;
+// 		if(t3 > 0 && (ray.direction*t3 - co).lengthSquare() <= radius*radius)
+// 			intersectionPointsParams.push_back(t3);
+// 	}
 
-	return ((point - top).cross((point - top), perpendicularVec)).normalizeIt();
-}
+// 	float minParam = INFINITY;
+// 	bool flag = false;
+// 	for(int i=0;i<intersectionPointsParams.size();i++){
+// 		if(minParam > intersectionPointsParams[i] && intersectionPointsParams[i]>=0) {
+// 			minParam = intersectionPointsParams[i];
+// 			flag = true;
+// 		}
+// 	}
+// 	if(flag){ t = minParam; return true;}
+// 	else return false;
+// }
 
-void Cone::print(){
-	cout<<"Not implemented"<<endl;
-}
+// Vector3f Cone::getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray){
+
+// 	if(abs((point - center).dot(upVector)) < 1e-4){
+// 		return upVector*(-1);
+// 	}
+
+// 	Vector3f top = center + upVector * height;
+// 	Vector3f perpendicularVec = (upVector * -1).cross((upVector * -1), point - top);
+
+// 	return ((point - top).cross((point - top), perpendicularVec)).normalizeIt();
+// }
+
+// void Cone::print(){
+// 	cout<<"Not implemented"<<endl;
+// }

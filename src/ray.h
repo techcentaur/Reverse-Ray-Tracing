@@ -24,6 +24,7 @@ public:
 		}
 	}
 
+
 	// make a function to take t, and return Vector
 	void print(){cout<<"[*] Ray: \n";
 				cout<<"Origin: "; this->origin.print();
