@@ -70,6 +70,7 @@ public:
 	Vector3f recentNormal;
 	vector<Plane> planes;
 	vector<Vector3f> boundPoints;
+	vector<Vector3f> vertices;
 	
 	Box();
 	Box(Vector3f &translate, Vector3f &scale, Material &m);
