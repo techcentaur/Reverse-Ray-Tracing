@@ -31,17 +31,17 @@ bool Sphere::getIntersection(Ray3f &ray, float &t0){
 	vector<vector<float>> M;
 	M.assign(3, vector<float>(3,0));
 	for (int i=0; i<3; i++) M[i][i] = 0;
-	M[0][0] = 2;
-	M[0][1] = 0;
-	M[0][2] = 0;
-	M[1][1] = 2;
+	M[0][0] = 1;
+	M[0][1] = 1;
+	M[0][2] = 1;
 	M[1][0] = 0;
+	M[1][1] = 1;
 	M[1][2] = 0;
 	M[2][0] = 0;
 	M[2][1] = 0;
-	M[2][2] = 2;
+	M[2][2] = 1;
 
-	vector<vector<float>> Minv = getInverseMatrix(M);
+	vector<vector<float>> Minv = M;
 
 	// for(int i=0; i<Minv.size(); i++){
 	// for(int j=0; j<Minv[i].size(); j++){
@@ -50,23 +50,25 @@ bool Sphere::getIntersection(Ray3f &ray, float &t0){
 	// 	cout<<endl;	
 	// }
 
-	Vector3f d(0, 0, 0);
+	Vector3f d(10, 0, 0);
 
 	Ray3f newRay;
 
-	Vector3f temp = ray.origin - d;
+	Vector3f temp = ray.origin;
 	Vector3f temp2(Minv[0][0]*temp.x + Minv[0][1]*temp.y + Minv[0][2]*temp.z, Minv[1][0]*temp.x + Minv[1][1]*temp.y + Minv[1][2]*temp.z, Minv[2][0]*temp.x + Minv[2][1]*temp.y + Minv[2][2]*temp.z);
 
 	temp = ray.direction;
 	Vector3f temp3(Minv[0][0]*temp.x + Minv[0][1]*temp.y + Minv[0][2]*temp.z , Minv[1][0]*temp.x + Minv[1][1]*temp.y + Minv[1][2]*temp.z, Minv[2][0]*temp.x + Minv[2][1]*temp.y + Minv[2][2]*temp.z);
 	
 	temp3.normalize();
+	temp2 = temp2 + d;
 	newRay.createRay(temp2, temp3, true);
 
+	ray = newRay;
 	// parametric method
-	Vector3f line = (center - newRay.origin);
+	Vector3f line = (center - ray.origin);
 
-	float lineProjection = line.dot(newRay.direction);
+	float lineProjection = line.dot(ray.direction);
 	float dist2 = line.dot(line) - lineProjection*lineProjection;
 	
 	if(dist2>radius*radius) return false;
@@ -85,14 +87,21 @@ bool Sphere::getIntersection(Ray3f &ray, float &t0){
 
 	t1 = temp_;
 	
-	recentIntersectionPoint = newRay.origin + newRay.direction*t0;
+	recentIntersectionPoint = ray.origin + ray.direction*t0;
 	
-	if((newRay.origin).lengthFrom(this->center) < radius){
+	if((ray.origin).lengthFrom(this->center) < radius){
 		recentNormal = (this->center - recentIntersectionPoint).normalizeIt();	
 	}
 	else{
 		recentNormal = (recentIntersectionPoint - this->center).normalizeIt();
 	}
+
+
+	Minv = getInverseMatrix(Minv);
+	temp = recentNormal;
+	Minv = getTranspose(Minv);
+	Vector3f tempRec(Minv[0][0]*temp.x + Minv[0][1]*temp.y + Minv[0][2]*temp.z , Minv[1][0]*temp.x + Minv[1][1]*temp.y + Minv[1][2]*temp.z, Minv[2][0]*temp.x + Minv[2][1]*temp.y + Minv[2][2]*temp.z);
+	recentNormal = tempRec;
 
 	return true;
 }
@@ -123,6 +132,19 @@ vector<vector<float>> Sphere::getInverseMatrix(vector<vector<float>> mat){
  
    return resultMat;
 }
+
+vector<vector<float>> Sphere::getTranspose(vector<vector<float>> m) {
+	vector<vector<float>> temp;
+	temp.assign(3, vector<float>(3,0));
+
+	for(int i=0; i<m.size(); i++){
+		for(int j=0; j<m[0].size(); j++){
+			temp[i][j] = m[j][i];
+		}
+	}
+	return temp;
+}
+
 
 void Sphere::print(){
 	cout<<"[*] Sphere: \n";
