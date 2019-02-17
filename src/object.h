@@ -37,6 +37,8 @@ public:
 	Vector3f getNormalOnIntersectionPoint();
 	Vector3f getIntersectionPoint();
 	vector<vector<float>> getInverseMatrix(vector<vector<float>> mat);
+	vector<vector<float>> getTranspose(vector<vector<float>> m);
+
 	void print();
 };
 
