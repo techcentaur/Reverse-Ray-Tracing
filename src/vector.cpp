@@ -1,6 +1,8 @@
 #include <iostream>
 #include "vector.h"
 #include <cmath>
+#include <vector>
+
 using namespace std;
 
 Vector3f::Vector3f(){
