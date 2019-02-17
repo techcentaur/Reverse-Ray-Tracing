@@ -1,4 +1,5 @@
 #include <tuple>
+#include <vector>
 #include "vector.h"
 #include "ray.h"
 #include "material.h"
@@ -67,17 +68,35 @@ void Sphere::print(){
 
 // ------------------------------Plane---------------------------
 
+
 // Plane initialization with a point and normal
 Plane::Plane(Vector3f &p, Vector3f &n, Material &m):Object(m){
 	point = p;
 	normal = n.normalizeIt();
+	vector<Vector3f> points;
+	bounds = points;
+}
+
+Plane::Plane(Vector3f &p1, Vector3f &p2, Vector3f &p3, Material &m):Object(m){
+	point = p1;
+	normal = (p1.cross(p2-p1, p3-p2)).normalizeIt();
+	vector<Vector3f> points;	points.push_back(p1);	points.push_back(p2);	points.push_back(p3);
+	bounds = points;
+}
+
+// Plane initialization with a point and normal
+Plane::Plane(Vector3f &p, Vector3f &n, vector<Vector3f> &points, Material &m):Object(m){
+	point = p;
+	// normal = n.normalizeIt();
+	normal = (points[0].cross(points[1]-points[0], points[2]-points[1])).normalizeIt();
+	bounds = points;
 }
 
 // Plane initialization with three points on plane
-Plane::Plane(Vector3f &p1, Vector3f &p2, Vector3f &p3, Material &m):Object(m){
-	point = p1;
-	normal = (p1.cross(p1-p2, p1-p3)).normalizeIt();
-	// bounds = b;
+Plane::Plane(vector<Vector3f> &points, Material &m):Object(m){
+	point = points[0];
+	normal = (points[0].cross(points[1]-points[0], points[2]-points[1])).normalizeIt();
+	bounds = points;
 }
 
 bool Plane::getIntersection(Ray3f &ray, float &t){
@@ -90,60 +109,58 @@ bool Plane::getIntersection(Ray3f &ray, float &t){
 		
 		Vector3f intersectPoint = ray.origin + (ray.direction)*param;
 
-		// If the point is behind camera
-		// if(bounds.size() == 0){
 			if((ray.origin).lengthFrom(intersectPoint) > (ray.origin + ray.direction).lengthFrom(intersectPoint)){
+
+				// polygon code here
+
+				if(bounds.size() > 2){
+					
+					int timesIntersect = 0;
+					
+					Vector3f dir = (((bounds[0] + bounds[1])/2) - intersectPoint ).normalizeIt();
+
+					for(int i = 0; i < bounds.size(); i++){
+						Vector3f p0 = bounds[i];
+						Vector3f p1; 	if(i == bounds.size() - 1){ p1 = bounds[0];} 	else{p1 = bounds[i+1];}
+						Vector3f pd = (p1-p0).normalizeIt();
+
+						float t1xy = ( ((intersectPoint.y - p0.y)*(-pd.x)) - ((intersectPoint.x - p0.x)*(-pd.y)) )/( ((-pd.y)*(dir.x)) - ((-pd.x)*(dir.y)) );
+						float t2xy = ( ((intersectPoint.y - p0.y)*(dir.x)) - ((intersectPoint.x - p0.x)*(dir.y)) )/( ((-pd.y)*(dir.x)) - ((-pd.x)*(dir.y)) );
+						// cout << "t1xy: " << t1xy << " t2xy: " << t2xy << endl;
+
+						float t1xz = ( ((intersectPoint.z - p0.z)*(-pd.x)) - ((intersectPoint.x - p0.x)*(-pd.z)) )/( ((-pd.z)*(dir.x)) - ((-pd.x)*(dir.z)) );
+						float t2xz = ( ((intersectPoint.z - p0.z)*(dir.x)) - ((intersectPoint.x - p0.x)*(dir.z)) )/( ((-pd.z)*(dir.x)) - ((-pd.x)*(dir.z)) );
+						// cout << "t1xz: " << t1xz << " t2xz: " << t2xz << endl;
+
+						float t1yz = ( ((intersectPoint.z - p0.z)*(-pd.y)) - ((intersectPoint.y - p0.y)*(-pd.z)) )/( ((-pd.z)*(dir.y)) - ((-pd.y)*(dir.z)) );
+						float t2yz = ( ((intersectPoint.z - p0.z)*(dir.y)) - ((intersectPoint.y - p0.y)*(dir.z)) )/( ((-pd.z)*(dir.y)) - ((-pd.y)*(dir.z)) );
+						// cout << "t1yz: " << t1yz << " t2yz: " << t2yz << endl;
+
+						if( (t2xy>=0 && t2xy<=1 && t1xy>=0) || (t2xz>=0 && t2xz<=1 && t1xz>=0) || (t2yz>=0 && t2yz<=1 && t1yz>=0)){
+							timesIntersect+=1;
+						}
+					}
+
+					if( timesIntersect%2 == 0){				
+						t = 0.f;
+						return false;
+					}
+				}
+				
+				// polygon code here
+				
 				t = param;
 				return true;
 			}
-		// }
-		// else if(bounds.size() > 0){
-		// 	if(intersectPoint.x >= bounds[0] && intersectPoint.x <= bounds[1] )
-		// 	{
-		// 		if(intersectPoint.y >= bounds[2] && intersectPoint.y <= bounds[3] ){
-		// 			if(intersectPoint.z >= bounds[4] && intersectPoint.z <= bounds[5] ){
-		// 				if((ray.origin).lengthFrom(intersectPoint) > (ray.origin + ray.direction).lengthFrom(intersectPoint)){
-		// 					t = param;
-		// 					return true;
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// }
-		
 	}
 
 	t = 0.f;
 	return false;
 }
 
-
 Vector3f Plane::getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray){
 	return this->normal;
 }
-
-// void Plane::translation(const Vector3f &vec){
-// 	point = point + vec;
-// 	bound[0] += vec.x; bound[2] += vec.y; bound[4] += vec.z;
-// 	bound[1] += vec.x; bound[3] += vec.y; bound[5] += vec.z;
-// }
-
-// void rotateAboutX(float angle){
-// 	Transformation t;
-// 	Vector3f new_normal = t.rotateAboutX(normal, angle);
-// 	normal = new_normal;
-// }
-
-// void rotateAboutY(float angle){
-// 	Transformation t;
-// 	Vector3f new_normal = t.rotateAboutY(normal, angle);
-// 	normal = new_normal;
-// }
-// void rotateAboutZ(float angle){
-// 	Transformation t;
-// 	Vector3f new_normal = t.rotateAboutZ(normal, angle);
-// 	normal = new_normal;
-// }
 
 void Plane::print(){
 	cout<<"[*] Plane: \n";

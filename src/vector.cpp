@@ -22,6 +22,9 @@ Vector3f Vector3f::operator * (float d){
 Vector3f Vector3f::operator + (float d){
 	return Vector3f(x+d, y+d, z+d);
 }
+Vector3f Vector3f::operator / (float d){
+	return Vector3f(x/d, y/d, z/d);
+}
 Vector3f Vector3f::operator * (const Vector3f &vec){
 	return Vector3f(x*vec.x, y*vec.y, z*vec.z);
 }

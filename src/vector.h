@@ -13,6 +13,7 @@ public:
 	// Vector3f operator = (const Vector3f &vec);
 	Vector3f operator * (float d);
 	Vector3f operator + (float d);
+	Vector3f operator / (float d);
 	Vector3f operator * (const Vector3f &vec);
 	Vector3f operator + (const Vector3f &vec);
 	Vector3f operator - (const Vector3f &vec);

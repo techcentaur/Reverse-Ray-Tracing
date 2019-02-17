@@ -42,9 +42,14 @@ class Plane : public Object {
 public:
 	Vector3f point;
 	Vector3f normal;
-	// vector<float> bounds;
+	vector<Vector3f> bounds;
 	
+	// new configurations
 	Plane();
+	Plane(Vector3f &p, Vector3f &n, vector<Vector3f> &points, Material &m);
+	Plane(vector<Vector3f> &points, Material &m);
+
+	// old configurations
 	Plane(Vector3f &p, Vector3f &n, Material &m);
 	Plane(Vector3f &p1, Vector3f &p2, Vector3f &p3, Material &m);
 
@@ -52,21 +57,12 @@ public:
 	Vector3f getNormalOnIntersectionPoint(Vector3f &point, Ray3f &ray);
 	void print();
 
-	// void translation(const Vector3f &transform);
-	// void rotateAboutX(float angle);
-	// void rotateAboutY(float angle);
-	// void rotateAboutZ(float angle);
-
 };
 
 
 class Box : public Object{
 
 public:
-	// float lenA,lenB,lenC;
-	// Vector3f point;
-	// Vector3f dirA, dirB, dirC;
-	// Vector3f dirA_, dirB_, dirC_;
 	Vector3f recentNormal;
 	vector<Plane> planes;
 	vector<Vector3f> boundPoints;
