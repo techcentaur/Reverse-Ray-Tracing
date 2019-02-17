@@ -95,7 +95,7 @@ int main(int argc, char** argv){
     // Vector3f camLookFrom(0, 0, 0), camLookAt(0, 0, -1), camViewUp(1, 0, 0);
     // Camera cam(camLookFrom, camLookAt, camViewUp, 60, float(width), float(height), sSampling, recursionDepth);
 
-    string sName = "./inputsample";
+    string sName = "./config";
 
     ifstream ifs;
     ifs.open(sName, ios::in);
@@ -251,9 +251,14 @@ int main(int argc, char** argv){
                 //     objects.push_back(c);
                 // }
                 else if(type == "PLANE"){
+                    
+                    bool toBound = false;
                     Vector3f point1, point2, point3;
+                    vector<Vector3f> points;
+                    Vector3f boundPoint;                    
                     Color3f color;
                     float sRE, sRC, dRC, reflecC, refracC, rI;
+
                     while(ifs.good()){
                         ifs>>type;
                         if(type=="COLOR"){
@@ -279,12 +284,23 @@ int main(int argc, char** argv){
                         }
                         else if(type=="POINT1"){
                             ifs>>point1.x>>point1.y>>point1.z;
+                            points.push_back(point1);
                         }
                         else if(type=="POINT2"){
                             ifs>>point2.x>>point2.y>>point2.z;
+                            points.push_back(point2);
                         }
                         else if(type=="POINT3"){
                             ifs>>point3.x>>point3.y>>point3.z;
+                            points.push_back(point3);
+                        }
+                        else if(type=="POINT4"){
+                            toBound = true;
+                            ifs>>boundPoint.x>>boundPoint.y>>boundPoint.z;
+                            points.push_back(boundPoint);
+                        }
+                        else if(type=="TO_BOUND"){
+                            toBound = true;
                         }
                         else {
                             break;
@@ -292,8 +308,14 @@ int main(int argc, char** argv){
                     }
                     Material m;
                     m.fillColor(color, sRE, sRC, dRC, reflecC, refracC, rI);
-                    Object* p = new Plane(point1, point2, point3, m);
-                    objects.push_back(p);
+                    if(toBound == true){    
+                        Object* p = new Plane(points, m);
+                        objects.push_back(p);
+                    }
+                    else{
+                        Object* p = new Plane(point1, point2, point3, m);
+                        objects.push_back(p);
+                    }
                 }
                 // else if(type == "BOX"){
                 //     Color3f color;
@@ -348,7 +370,7 @@ int main(int argc, char** argv){
     }
 
 
-    string fileName = "./figures/exp1/101.ppm";
+    string fileName = "./figures/exp1/hardik.ppm";
     Tracer rayTracer;
     
     rayTracer.writeImage(objects, lights, fileName, cam, false);

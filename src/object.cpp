@@ -147,7 +147,7 @@ Plane::Plane(Vector3f &p, Vector3f &n, Material &m):Object(m){
 Plane::Plane(Vector3f &p1, Vector3f &p2, Vector3f &p3, Material &m):Object(m){
 	point = p1;
 	normal = (p1.cross(p2-p1, p3-p2)).normalizeIt();
-	vector<Vector3f> points;	points.push_back(p1);	points.push_back(p2);	points.push_back(p3);
+	vector<Vector3f> points;
 	bounds = points;
 }
 
@@ -192,16 +192,13 @@ bool Plane::getIntersection(Ray3f &ray, float &t){
 						Vector3f pd = (p1-p0).normalizeIt();
 
 						float t1xy = ( ((intersectPoint.y - p0.y)*(-pd.x)) - ((intersectPoint.x - p0.x)*(-pd.y)) )/( ((-pd.y)*(dir.x)) - ((-pd.x)*(dir.y)) );
-						float t2xy = ( ((intersectPoint.y - p0.y)*(dir.x)) - ((intersectPoint.x - p0.x)*(dir.y)) )/( ((-pd.y)*(dir.x)) - ((-pd.x)*(dir.y)) );
-						// cout << "t1xy: " << t1xy << " t2xy: " << t2xy << endl;
+						float t2xy = -( ((intersectPoint.y - p0.y)*(dir.x)) - ((intersectPoint.x - p0.x)*(dir.y)) )/( ((-pd.y)*(dir.x)) - ((-pd.x)*(dir.y)) );
 
 						float t1xz = ( ((intersectPoint.z - p0.z)*(-pd.x)) - ((intersectPoint.x - p0.x)*(-pd.z)) )/( ((-pd.z)*(dir.x)) - ((-pd.x)*(dir.z)) );
-						float t2xz = ( ((intersectPoint.z - p0.z)*(dir.x)) - ((intersectPoint.x - p0.x)*(dir.z)) )/( ((-pd.z)*(dir.x)) - ((-pd.x)*(dir.z)) );
-						// cout << "t1xz: " << t1xz << " t2xz: " << t2xz << endl;
+						float t2xz = -( ((intersectPoint.z - p0.z)*(dir.x)) - ((intersectPoint.x - p0.x)*(dir.z)) )/( ((-pd.z)*(dir.x)) - ((-pd.x)*(dir.z)) );
 
 						float t1yz = ( ((intersectPoint.z - p0.z)*(-pd.y)) - ((intersectPoint.y - p0.y)*(-pd.z)) )/( ((-pd.z)*(dir.y)) - ((-pd.y)*(dir.z)) );
-						float t2yz = ( ((intersectPoint.z - p0.z)*(dir.y)) - ((intersectPoint.y - p0.y)*(dir.z)) )/( ((-pd.z)*(dir.y)) - ((-pd.y)*(dir.z)) );
-						// cout << "t1yz: " << t1yz << " t2yz: " << t2yz << endl;
+						float t2yz = -( ((intersectPoint.z - p0.z)*(dir.y)) - ((intersectPoint.y - p0.y)*(dir.z)) )/( ((-pd.z)*(dir.y)) - ((-pd.y)*(dir.z)) );
 
 						if( (t2xy>=0 && t2xy<=1 && t1xy>=0) || (t2xz>=0 && t2xz<=1 && t1xz>=0) || (t2yz>=0 && t2yz<=1 && t1yz>=0)){
 							timesIntersect+=1;
