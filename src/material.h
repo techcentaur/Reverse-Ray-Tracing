@@ -27,6 +27,10 @@ public:
 		refractiveIndex = rIndex;
 	}
 	
+	void changeColor(Color3f& c){
+		diffuseColor = c;
+	}
+
 	void print(){cout<<"[*] Material: "; diffuseColor.print();
 	cout<<"specularReflectionExponent: "<<specularReflectionExponent<<endl;
 	cout<<"specularReflectionCoefficient: "<<specularReflectionCoefficient<<endl;

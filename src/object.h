@@ -6,6 +6,7 @@
 #include "vector.h"
 #include "ray.h"
 #include "material.h"
+#include "color.h"
 
 using namespace std;
 
@@ -19,8 +20,8 @@ public:
 	virtual void print() = 0;
 	virtual Vector3f getIntersectionPoint() = 0;
 	virtual Vector3f getNormalOnIntersectionPoint() = 0;
-
 };
+
 
 class Sphere : public Object {
 
@@ -29,6 +30,7 @@ public:
 	Vector3f center;
 	Vector3f recentIntersectionPoint;
 	Vector3f recentNormal;
+	Color3f recentColor;
 
 	Sphere();	
 	Sphere(float radius, Vector3f &vec, Material &m);
@@ -38,6 +40,7 @@ public:
 	Vector3f getIntersectionPoint();
 	vector<vector<float>> getInverseMatrix(vector<vector<float>> mat);
 	vector<vector<float>> getTranspose(vector<vector<float>> m);
+	Color3f getTexture(Vector3f v);
 
 	void print();
 };

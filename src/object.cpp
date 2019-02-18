@@ -7,7 +7,7 @@
 #include "transformation.h"
 #include <cmath>
 #include <limits>
-
+#include "color.h"
 
 using namespace std;
 
@@ -22,35 +22,19 @@ Sphere::Sphere(float r, Vector3f &vec, Material &m):Object(m){
 
 bool Sphere::getIntersection(Ray3f &ray, float &t0){
 
+	//-------------------transformations---------
 	Vector3f v(0, 0, 0);
-
-	// let M be transformation matrix and d be displacement
-	// old ray = r1 + r2t
-	// new ray = (r1-d)Minv + cMinvt 
 
 	vector<vector<float>> M;
 	M.assign(3, vector<float>(3,0));
 	for (int i=0; i<3; i++) M[i][i] = 0;
-	M[0][0] = 1;
-	M[0][1] = 1;
-	M[0][2] = 1;
-	M[1][0] = 0;
-	M[1][1] = 1;
-	M[1][2] = 0;
-	M[2][0] = 0;
-	M[2][1] = 0;
-	M[2][2] = 1;
+	M[0][0] = 1; M[0][1] = 1; M[0][2] = 1;
+	M[1][0] = 0; M[1][1] = 1; M[1][2] = 1;
+	M[2][0] = 0; M[2][1] = 0; M[2][2] = 1;
 
 	vector<vector<float>> Minv = M;
 
-	// for(int i=0; i<Minv.size(); i++){
-	// for(int j=0; j<Minv[i].size(); j++){
-	// 	cout<<Minv[i][j]<<" ";
-	// 	}
-	// 	cout<<endl;	
-	// }
-
-	Vector3f d(10, 0, 0);
+	Vector3f d(0, 0, 0);
 
 	Ray3f newRay;
 
@@ -64,7 +48,10 @@ bool Sphere::getIntersection(Ray3f &ray, float &t0){
 	temp2 = temp2 + d;
 	newRay.createRay(temp2, temp3, true);
 
-	ray = newRay;
+	// ray = newRay;
+
+	//-------------------transformations:-----------
+
 	// parametric method
 	Vector3f line = (center - ray.origin);
 
@@ -96,15 +83,20 @@ bool Sphere::getIntersection(Ray3f &ray, float &t0){
 		recentNormal = (recentIntersectionPoint - this->center).normalizeIt();
 	}
 
+	recentColor = getTexture(recentIntersectionPoint);
+	this->material.changeColor(recentColor);
 
-	Minv = getInverseMatrix(Minv);
-	temp = recentNormal;
-	Minv = getTranspose(Minv);
-	Vector3f tempRec(Minv[0][0]*temp.x + Minv[0][1]*temp.y + Minv[0][2]*temp.z , Minv[1][0]*temp.x + Minv[1][1]*temp.y + Minv[1][2]*temp.z, Minv[2][0]*temp.x + Minv[2][1]*temp.y + Minv[2][2]*temp.z);
-	recentNormal = tempRec;
+	//---------------transformations on Normal------------
+	// Minv = getInverseMatrix(Minv);
+	// temp = recentNormal;
+	// Minv = getTranspose(Minv);
+	// Vector3f tempRec(Minv[0][0]*temp.x + Minv[0][1]*temp.y + Minv[0][2]*temp.z , Minv[1][0]*temp.x + Minv[1][1]*temp.y + Minv[1][2]*temp.z, Minv[2][0]*temp.x + Minv[2][1]*temp.y + Minv[2][2]*temp.z);
+	// recentNormal = tempRec;
 
 	return true;
 }
+
+
 Vector3f Sphere::getIntersectionPoint(){
 	return recentIntersectionPoint;
 }
@@ -145,6 +137,79 @@ vector<vector<float>> Sphere::getTranspose(vector<vector<float>> m) {
 	return temp;
 }
 
+Color3f Sphere::getTexture(Vector3f OP){
+	float PI = 3.141592654;
+	float TWOPI = 6.283185308;
+
+	// CP = OP - OC
+	Vector3f CP = OP - this->center;
+	Vector3f Xaxis(1,0,0), Zaxis(0,0,1);
+
+	float theta = acos(CP.dot(Zaxis)/CP.length());
+	float phi = acos(CP.dot(Xaxis)/CP.length());
+
+	Vector3f v(this->radius*sin(theta)*cos(phi), this->radius*sin(theta)*sin(phi), this->radius*cos(theta));
+
+	float s;
+	float t = acos(v.z/this->radius) / PI;
+	if (v.y >= 0)
+		s = acos(v.x/(this->radius * sin(PI*(t)))) / TWOPI;
+	else
+		s = (PI + acos(v.x/(this->radius * sin(PI*(t))))) / TWOPI;
+
+    // ifstream imageFile;
+    // imageFile.open("./figures/exp1/11.ppm",  ios::in);
+
+    // s = s*1024;
+    // t = t*768;
+
+   //  while(imageFile.good()){
+	  //   string type;
+	  //   imageFile>>type;
+	  //   float x, y, z;
+	  //   imageFile>>x>>y;
+	  //   imageFile>>z;
+
+
+   // }
+	s = abs(s); t=abs(t);
+	Color3f black(0, 0, 0);
+	Color3f white(255, 255, 255);
+
+	if(s<0.3){
+		if(t<0.3){
+			return white;
+		}
+		else if(t<0.6){
+			return black;
+		}
+		else{
+			return white;
+		}
+	}else if(s<0.6){
+		if(t<0.3){
+			return black;
+		}
+		else if(t<0.6){
+			return white;
+		}
+		else{
+			return black;
+		}
+	}else{
+		if(t<0.3){
+			return white;
+		}
+		else if(t<0.6){
+			return black;
+		}
+		else{
+			return white;
+		}
+	}
+    // imageFile.close()
+	return white;
+}
 
 void Sphere::print(){
 	cout<<"[*] Sphere: \n";
