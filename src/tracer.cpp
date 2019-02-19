@@ -8,7 +8,7 @@
 #include <tuple>
 #include  <typeinfo>
 #include <cstring>
-
+#include <algorithm>
 
 #include "tracer.h"
 #include "color.h"
@@ -21,6 +21,7 @@
 
 using namespace std;
 
+vector<Vector3f> intersectionPointsOfARay;
 
 bool Tracer::SceneRayCasting(Ray3f &ray, vector<Object*> objectList, Vector3f &iPoint, Vector3f &nVector, Material &iMaterial){
     float maxDistance = numeric_limits<float>::max();
@@ -114,10 +115,39 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
         specularLightIntensity += powf(max(0.f, reflectionVector.dot((iPoint - ray.origin).normalizeIt())), iMaterial.specularReflectionExponent)*lSrcList.at(i)->intensity;
     }
 
+
     Color3f support(1.f, 1.f, 1.f);
     Color3f ret = ((iMaterial.diffuseColor * diffuseLightIntensity)* iMaterial.diffuseReflectionCoefficient) + ((support * specularLightIntensity) * iMaterial.specularReflectionCoefficient) + reflectedSurfaceColor*iMaterial.reflectionCoefficient + refractedSurfaceColor*iMaterial.refractionCoefficient;
 
+    if (find(intersectionPointsOfARay.begin(), intersectionPointsOfARay.end(), iPoint) == intersectionPointsOfARay.end())
+        intersectionPointsOfARay.push_back(iPoint);
+
     return ret;
+}
+
+vector<Vector3f> Tracer::getIntersectionPointsOfARay(vector<Object*> objects, vector<Light*> lights, Camera &cam, int i, int j){
+    int width = cam.width;
+    int height = cam.height;
+    int superSamplingRays = 1;
+    int fieldOfView = cam.fov;
+    this->recursionDepth = cam.recursionDepth;
+
+    intersectionPointsOfARay.clear();
+
+    for(int s=0; s<superSamplingRays; s++){
+        float x = float(j + 0.5) / float(width);
+        float y = float(i + 0.5) / float(height);
+
+        cout<<"X "<<x<<"  "<<"y "<<y<<endl;
+
+        Ray3f newRay = cam.getRay(x, y);
+        RayCasting(newRay, objects, lights, 0);
+        newRay.print();
+    }
+    // drawInPixelBuffer(j, i, col.r, col.g, col.b);
+    cout<<"Number of Intersections Points: "<<intersectionPointsOfARay.size()<<endl;
+
+    return intersectionPointsOfARay;
 }
 
 void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList, string fileName, Camera &cam, bool antiAliasing=false){
@@ -175,13 +205,20 @@ void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesL
     }else{
         for(int i=height-1; i>=0; i--){
             for(int j=0; j<width; j++){
+                intersectionPointsOfARay.clear();
                 Color3f col(0.f, 0.f, 0.f);
                 for(int s=0; s<superSamplingRays; s++){
-                    float x = float(j + drand48()) / float(width);
-                    float y = float(i + drand48()) / float(height);
+                    float x = float(j + 0.5) / float(width);
+                    float y = float(i + 0.5) / float(height);
 
                     Ray3f newRay = cam.getRay(x, y);
                     col += (RayCasting(newRay, objectList, lightSourcesList));
+                    if(intersectionPointsOfARay.size() > 1){
+                        cam.getRay(x, y).print();
+                        cout<<"X "<<x<<"  "<<"y "<<y<<endl;
+                        cout<<"i "<<i<<"  "<<"j "<<j<<endl;
+                        cout<<intersectionPointsOfARay.size()<<endl;
+                    }
                 }
                 col /= float(superSamplingRays);
                 pixelBuffer[j+i*width] = col;
