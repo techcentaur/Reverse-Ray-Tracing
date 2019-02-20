@@ -390,4 +390,13 @@ void Matrix::print(){
 
 // 	Matrix nm = m.inverse(m);
 // 	nm.print();
+// 	cout<< endl;
+	
+// 	m * nm;
+// 	nm.print();
+// 	cout<< endl;
+	
+// 	Matrix mul = m*nm;
+// 	mul.print();
+// 	cout<< endl;
 // }

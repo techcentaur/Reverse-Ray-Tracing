@@ -62,6 +62,13 @@ int main(int argc, char** argv)
     // }
     // else{cout<<endl<<"inside"<<endl;}
 
+    Transformation t;
+    Vector3f p(1,2,3);
 
+    Vector3f ps(2,2,2);
+
+    Vector3f n = t.scaling(p,ps);
+    n.print();
+    
     return 1;
 }
