@@ -370,7 +370,7 @@ int main(int argc, char** argv){
     }
     
 
-    string fileName = "./figures/exp1/104.ppm";
+    string fileName = "./figures/exp1/106.ppm";
     Tracer rayTracer;
     
     rayTracer.writeImage(objects, lights, fileName, cam, false);

@@ -7,6 +7,7 @@
 #include "transformation.h"
 #include <cmath>
 #include <limits>
+#include <fstream>
 #include "color.h"
 
 using namespace std;
@@ -18,7 +19,25 @@ Object::Object(Material &m){
 // -----------------------------Sphere---------------------------
 Sphere::Sphere(float r, Vector3f &vec, Material &m):Object(m){
 	radius = r; center = vec; material = m;
+	readTexture();
 }
+
+void Sphere::readTexture(){
+    ifstream ifs;
+    ifs.open("./samp_tex.ppm", ios::in);
+    if(!ifs.is_open()) {
+        cout<<"Error opening file"<<endl;
+    }
+
+    ifs>>textureCount;
+    while(ifs.good()){
+        float x, y, z;
+        ifs>>x>>y>>z;
+    	Color3f c1(x, y, z);
+        texture.push_back(c1);
+	}
+}
+
 
 bool Sphere::getIntersection(Ray3f &ray, float &t0){
 
@@ -157,58 +176,12 @@ Color3f Sphere::getTexture(Vector3f OP){
 	else
 		s = (PI + acos(v.x/(this->radius * sin(PI*(t))))) / TWOPI;
 
-    // ifstream imageFile;
-    // imageFile.open("./figures/exp1/11.ppm",  ios::in);
+	s = abs(s)*(textureCount*10); t=abs(t)*(textureCount*10);
+	int s1 = (int)s;
+	int t1 = (int)t;
+	s1 = s1 % textureCount; t1 = t1 % textureCount;
+	return texture.at(t1*textureCount+s1);
 
-    // s = s*1024;
-    // t = t*768;
-
-   //  while(imageFile.good()){
-	  //   string type;
-	  //   imageFile>>type;
-	  //   float x, y, z;
-	  //   imageFile>>x>>y;
-	  //   imageFile>>z;
-
-
-   // }
-	s = abs(s); t=abs(t);
-	Color3f black(0, 0, 0);
-	Color3f white(255, 255, 255);
-
-	if(s<0.3){
-		if(t<0.3){
-			return white;
-		}
-		else if(t<0.6){
-			return black;
-		}
-		else{
-			return white;
-		}
-	}else if(s<0.6){
-		if(t<0.3){
-			return black;
-		}
-		else if(t<0.6){
-			return white;
-		}
-		else{
-			return black;
-		}
-	}else{
-		if(t<0.3){
-			return white;
-		}
-		else if(t<0.6){
-			return black;
-		}
-		else{
-			return white;
-		}
-	}
-    // imageFile.close()
-	return white;
 }
 
 void Sphere::print(){

@@ -8,6 +8,7 @@
 #include "material.h"
 #include "color.h"
 
+
 using namespace std;
 
 class Object{
@@ -31,10 +32,14 @@ public:
 	Vector3f recentIntersectionPoint;
 	Vector3f recentNormal;
 	Color3f recentColor;
+	vector<Color3f> texture;
+	int textureCount;
+
 
 	Sphere();	
 	Sphere(float radius, Vector3f &vec, Material &m);
 
+	void readTexture();
 	bool getIntersection(Ray3f &ray, float &t);
 	Vector3f getNormalOnIntersectionPoint();
 	Vector3f getIntersectionPoint();
