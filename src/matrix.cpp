@@ -179,7 +179,7 @@ Matrix Matrix::inverse(const Matrix &m){
 	A01.mat[2][0] = m.mat[3][0];
 	A01.mat[2][1] = m.mat[3][2];
 	A01.mat[2][2] = m.mat[3][3];
-	Cij.mat[0][1] = determinant3(A01);
+	Cij.mat[0][1] = -determinant3(A01);
 	//A02
 	Matrix A02(3,3);
 	A02.mat[0][0] = m.mat[1][0];
@@ -203,162 +203,158 @@ Matrix Matrix::inverse(const Matrix &m){
 	A01.mat[2][0] = m.mat[3][0];
 	A01.mat[2][1] = m.mat[3][1];
 	A01.mat[2][2] = m.mat[3][2];
-	Cij.mat[0][3] = determinant3(A03);
+	Cij.mat[0][3] = -determinant3(A03);
 
 
 	//A10	
 	Matrix A10(3,3);
-	A00.mat[0][0] = m.mat[0][1];
-	A00.mat[0][1] = m.mat[0][2];
-	A00.mat[0][2] = m.mat[0][3];
-	A00.mat[1][0] = m.mat[2][1];
-	A00.mat[1][1] = m.mat[2][2];
-	A00.mat[1][2] = m.mat[2][3];
-	A00.mat[2][0] = m.mat[3][1];
-	A00.mat[2][1] = m.mat[3][2];
-	A00.mat[2][2] = m.mat[3][3];
-	Cij.mat[1][0] = determinant3(A10);
-	// A10.print();
-	// cout<<determinant3(A10);
-	
+	A10.mat[0][0] = m.mat[0][1];
+	A10.mat[0][1] = m.mat[0][2];
+	A10.mat[0][2] = m.mat[0][3];
+	A10.mat[1][0] = m.mat[2][1];
+	A10.mat[1][1] = m.mat[2][2];
+	A10.mat[1][2] = m.mat[2][3];
+	A10.mat[2][0] = m.mat[3][1];
+	A10.mat[2][1] = m.mat[3][2];
+	A10.mat[2][2] = m.mat[3][3];
+	Cij.mat[1][0] = -determinant3(A10);
 	//A11	
 	Matrix A11(3,3);
-	A00.mat[0][0] = m.mat[0][0];
-	A00.mat[0][1] = m.mat[0][2];
-	A00.mat[0][2] = m.mat[0][3];
-	A00.mat[1][0] = m.mat[2][0];
-	A00.mat[1][1] = m.mat[2][2];
-	A00.mat[1][2] = m.mat[2][3];
-	A00.mat[2][0] = m.mat[3][0];
-	A00.mat[2][1] = m.mat[3][2];
-	A00.mat[2][2] = m.mat[3][3];
+	A11.mat[0][0] = m.mat[0][0];
+	A11.mat[0][1] = m.mat[0][2];
+	A11.mat[0][2] = m.mat[0][3];
+	A11.mat[1][0] = m.mat[2][0];
+	A11.mat[1][1] = m.mat[2][2];
+	A11.mat[1][2] = m.mat[2][3];
+	A11.mat[2][0] = m.mat[3][0];
+	A11.mat[2][1] = m.mat[3][2];
+	A11.mat[2][2] = m.mat[3][3];
 	Cij.mat[1][1] = determinant3(A11);
 	//A12	
 	Matrix A12(3,3);
-	A00.mat[0][0] = m.mat[0][0];
-	A00.mat[0][1] = m.mat[0][1];
-	A00.mat[0][2] = m.mat[0][3];
-	A00.mat[1][0] = m.mat[2][0];
-	A00.mat[1][1] = m.mat[2][1];
-	A00.mat[1][2] = m.mat[2][3];
-	A00.mat[2][0] = m.mat[3][0];
-	A00.mat[2][1] = m.mat[3][1];
-	A00.mat[2][2] = m.mat[3][3];
-	Cij.mat[1][2] = determinant3(A12);
+	A12.mat[0][0] = m.mat[0][0];
+	A12.mat[0][1] = m.mat[0][1];
+	A12.mat[0][2] = m.mat[0][3];
+	A12.mat[1][0] = m.mat[2][0];
+	A12.mat[1][1] = m.mat[2][1];
+	A12.mat[1][2] = m.mat[2][3];
+	A12.mat[2][0] = m.mat[3][0];
+	A12.mat[2][1] = m.mat[3][1];
+	A12.mat[2][2] = m.mat[3][3];
+	Cij.mat[1][2] = -determinant3(A12);
 	//A13	
 	Matrix A13(3,3);
-	A00.mat[0][0] = m.mat[0][0];
-	A00.mat[0][1] = m.mat[0][1];
-	A00.mat[0][2] = m.mat[0][2];
-	A00.mat[1][0] = m.mat[2][0];
-	A00.mat[1][1] = m.mat[2][1];
-	A00.mat[1][2] = m.mat[2][2];
-	A00.mat[2][0] = m.mat[3][0];
-	A00.mat[2][1] = m.mat[3][1];
-	A00.mat[2][2] = m.mat[3][2];
+	A13.mat[0][0] = m.mat[0][0];
+	A13.mat[0][1] = m.mat[0][1];
+	A13.mat[0][2] = m.mat[0][2];
+	A13.mat[1][0] = m.mat[2][0];
+	A13.mat[1][1] = m.mat[2][1];
+	A13.mat[1][2] = m.mat[2][2];
+	A13.mat[2][0] = m.mat[3][0];
+	A13.mat[2][1] = m.mat[3][1];
+	A13.mat[2][2] = m.mat[3][2];
 	Cij.mat[1][3] = determinant3(A13);
 
 
 	//A20	
 	Matrix A20(3,3);
-	A00.mat[0][0] = m.mat[0][1];
-	A00.mat[0][1] = m.mat[0][2];
-	A00.mat[0][2] = m.mat[0][3];
-	A00.mat[1][0] = m.mat[1][1];
-	A00.mat[1][1] = m.mat[1][2];
-	A00.mat[1][2] = m.mat[1][3];
-	A00.mat[2][0] = m.mat[3][1];
-	A00.mat[2][1] = m.mat[3][2];
-	A00.mat[2][2] = m.mat[3][3];
+	A20.mat[0][0] = m.mat[0][1];
+	A20.mat[0][1] = m.mat[0][2];
+	A20.mat[0][2] = m.mat[0][3];
+	A20.mat[1][0] = m.mat[1][1];
+	A20.mat[1][1] = m.mat[1][2];
+	A20.mat[1][2] = m.mat[1][3];
+	A20.mat[2][0] = m.mat[3][1];
+	A20.mat[2][1] = m.mat[3][2];
+	A20.mat[2][2] = m.mat[3][3];
 	Cij.mat[2][0] = determinant3(A20);
 	//A21	
 	Matrix A21(3,3);
-	A00.mat[0][0] = m.mat[0][0];
-	A00.mat[0][1] = m.mat[0][2];
-	A00.mat[0][2] = m.mat[0][3];
-	A00.mat[1][0] = m.mat[1][0];
-	A00.mat[1][1] = m.mat[1][2];
-	A00.mat[1][2] = m.mat[1][3];
-	A00.mat[2][0] = m.mat[3][0];
-	A00.mat[2][1] = m.mat[3][2];
-	A00.mat[2][2] = m.mat[3][3];
-	Cij.mat[2][1] = determinant3(A21);
+	A21.mat[0][0] = m.mat[0][0];
+	A21.mat[0][1] = m.mat[0][2];
+	A21.mat[0][2] = m.mat[0][3];
+	A21.mat[1][0] = m.mat[1][0];
+	A21.mat[1][1] = m.mat[1][2];
+	A21.mat[1][2] = m.mat[1][3];
+	A21.mat[2][0] = m.mat[3][0];
+	A21.mat[2][1] = m.mat[3][2];
+	A21.mat[2][2] = m.mat[3][3];
+	Cij.mat[2][1] = -determinant3(A21);
 	//A22	
 	Matrix A22(3,3);
-	A00.mat[0][0] = m.mat[0][0];
-	A00.mat[0][1] = m.mat[0][1];
-	A00.mat[0][2] = m.mat[0][3];
-	A00.mat[1][0] = m.mat[1][0];
-	A00.mat[1][1] = m.mat[1][1];
-	A00.mat[1][2] = m.mat[1][3];
-	A00.mat[2][0] = m.mat[3][0];
-	A00.mat[2][1] = m.mat[3][1];
-	A00.mat[2][2] = m.mat[3][3];
+	A22.mat[0][0] = m.mat[0][0];
+	A22.mat[0][1] = m.mat[0][1];
+	A22.mat[0][2] = m.mat[0][3];
+	A22.mat[1][0] = m.mat[1][0];
+	A22.mat[1][1] = m.mat[1][1];
+	A22.mat[1][2] = m.mat[1][3];
+	A22.mat[2][0] = m.mat[3][0];
+	A22.mat[2][1] = m.mat[3][1];
+	A22.mat[2][2] = m.mat[3][3];
 	Cij.mat[2][2] = determinant3(A22);
 	//A23	
 	Matrix A23(3,3);
-	A00.mat[0][0] = m.mat[0][0];
-	A00.mat[0][1] = m.mat[0][1];
-	A00.mat[0][2] = m.mat[0][2];
-	A00.mat[1][0] = m.mat[1][0];
-	A00.mat[1][1] = m.mat[1][1];
-	A00.mat[1][2] = m.mat[1][2];
-	A00.mat[2][0] = m.mat[3][0];
-	A00.mat[2][1] = m.mat[3][1];
-	A00.mat[2][2] = m.mat[3][2];
-	Cij.mat[2][3] = determinant3(A23);
+	A23.mat[0][0] = m.mat[0][0];
+	A23.mat[0][1] = m.mat[0][1];
+	A23.mat[0][2] = m.mat[0][2];
+	A23.mat[1][0] = m.mat[1][0];
+	A23.mat[1][1] = m.mat[1][1];
+	A23.mat[1][2] = m.mat[1][2];
+	A23.mat[2][0] = m.mat[3][0];
+	A23.mat[2][1] = m.mat[3][1];
+	A23.mat[2][2] = m.mat[3][2];
+	Cij.mat[2][3] = -determinant3(A23);
 
 
 	//A30	
 	Matrix A30(3,3);
-	A00.mat[0][0] = m.mat[0][1];
-	A00.mat[0][1] = m.mat[0][2];
-	A00.mat[0][2] = m.mat[0][3];
-	A00.mat[1][0] = m.mat[1][1];
-	A00.mat[1][1] = m.mat[1][2];
-	A00.mat[1][2] = m.mat[1][3];
-	A00.mat[2][0] = m.mat[2][1];
-	A00.mat[2][1] = m.mat[2][2];
-	A00.mat[2][2] = m.mat[2][3];
-	Cij.mat[3][0] = determinant3(A30);
+	A30.mat[0][0] = m.mat[0][1];
+	A30.mat[0][1] = m.mat[0][2];
+	A30.mat[0][2] = m.mat[0][3];
+	A30.mat[1][0] = m.mat[1][1];
+	A30.mat[1][1] = m.mat[1][2];
+	A30.mat[1][2] = m.mat[1][3];
+	A30.mat[2][0] = m.mat[2][1];
+	A30.mat[2][1] = m.mat[2][2];
+	A30.mat[2][2] = m.mat[2][3];
+	Cij.mat[3][0] = -determinant3(A30);
 	//A31	
 	Matrix A31(3,3);
-	A00.mat[0][0] = m.mat[0][0];
-	A00.mat[0][1] = m.mat[0][2];
-	A00.mat[0][2] = m.mat[0][3];
-	A00.mat[1][0] = m.mat[1][0];
-	A00.mat[1][1] = m.mat[1][2];
-	A00.mat[1][2] = m.mat[1][3];
-	A00.mat[2][0] = m.mat[2][0];
-	A00.mat[2][1] = m.mat[2][2];
-	A00.mat[2][2] = m.mat[2][3];
+	A31.mat[0][0] = m.mat[0][0];
+	A31.mat[0][1] = m.mat[0][2];
+	A31.mat[0][2] = m.mat[0][3];
+	A31.mat[1][0] = m.mat[1][0];
+	A31.mat[1][1] = m.mat[1][2];
+	A31.mat[1][2] = m.mat[1][3];
+	A31.mat[2][0] = m.mat[2][0];
+	A31.mat[2][1] = m.mat[2][2];
+	A31.mat[2][2] = m.mat[2][3];
 	Cij.mat[3][1] = determinant3(A31);
 	//A32	
 	Matrix A32(3,3);
-	A00.mat[0][0] = m.mat[0][0];
-	A00.mat[0][1] = m.mat[0][1];
-	A00.mat[0][2] = m.mat[0][3];
-	A00.mat[1][0] = m.mat[1][0];
-	A00.mat[1][1] = m.mat[1][1];
-	A00.mat[1][2] = m.mat[1][3];
-	A00.mat[2][0] = m.mat[2][0];
-	A00.mat[2][1] = m.mat[2][1];
-	A00.mat[2][2] = m.mat[2][3];
-	Cij.mat[3][2] = determinant3(A32);
+	A32.mat[0][0] = m.mat[0][0];
+	A32.mat[0][1] = m.mat[0][1];
+	A32.mat[0][2] = m.mat[0][3];
+	A32.mat[1][0] = m.mat[1][0];
+	A32.mat[1][1] = m.mat[1][1];
+	A32.mat[1][2] = m.mat[1][3];
+	A32.mat[2][0] = m.mat[2][0];
+	A32.mat[2][1] = m.mat[2][1];
+	A32.mat[2][2] = m.mat[2][3];
+	Cij.mat[3][2] = -determinant3(A32);
 	//A33	
 	Matrix A33(3,3);
-	A00.mat[0][0] = m.mat[0][0];
-	A00.mat[0][1] = m.mat[0][1];
-	A00.mat[0][2] = m.mat[0][2];
-	A00.mat[1][0] = m.mat[1][0];
-	A00.mat[1][1] = m.mat[1][1];
-	A00.mat[1][2] = m.mat[1][2];
-	A00.mat[2][0] = m.mat[2][0];
-	A00.mat[2][1] = m.mat[2][1];
-	A00.mat[2][2] = m.mat[2][2];
+	A33.mat[0][0] = m.mat[0][0];
+	A33.mat[0][1] = m.mat[0][1];
+	A33.mat[0][2] = m.mat[0][2];
+	A33.mat[1][0] = m.mat[1][0];
+	A33.mat[1][1] = m.mat[1][1];
+	A33.mat[1][2] = m.mat[1][2];
+	A33.mat[2][0] = m.mat[2][0];
+	A33.mat[2][1] = m.mat[2][1];
+	A33.mat[2][2] = m.mat[2][2];
 	Cij.mat[3][3] = determinant3(A33);
 
-	// Cij.print();
 
 	Matrix Adj = Cij.transpose();
 
@@ -381,11 +377,17 @@ void Matrix::print(){
 	}
 }
 
-int main(){
-	Matrix m;
-	m.print();
-	cout<< endl;
+// int main(){
+// 	Matrix m;
+// 	m.mat[0][0] = 4;
 
-	Matrix nm = m.inverse(m);
-	nm.print();
-}
+// 	m.mat[1][1] = 5;
+
+// 	m.mat[0][1] = 1;
+
+// 	m.print();
+// 	cout<< endl;
+
+// 	Matrix nm = m.inverse(m);
+// 	nm.print();
+// }
