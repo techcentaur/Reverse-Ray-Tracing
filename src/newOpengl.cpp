@@ -22,10 +22,10 @@ using namespace std;
 float angle = 0.0f;
 
 // actual vector representing the camera's direction
-float lx=0.0f,lz=-1.0f;
+float lx=10.0f,lz=0.0f;
 
 // XZ position of the camera
-float x=0.0f, z=5.0f;
+float x=10.0f, z=2.0f;
 
 // the key states. These variables will be zero
 //when no key is being presses
@@ -59,7 +59,7 @@ void changeSize(int w, int h) {
 	glViewport(0, 0, w, h);
 
 	// Set the correct perspective.
-	gluPerspective(45.0f, ratio, 0.1f, 100.0f);
+	gluPerspective(cam.fov, (cam.width/cam.height), 0.1f, 100.0f);
 
 	// Get Back to the Modelview
 	glMatrixMode(GL_MODELVIEW);
@@ -68,7 +68,7 @@ void changeSize(int w, int h) {
 void drawIntersectionPoints(){
     glColor3f(0.9f, 0.9f, 0.9f);
 
-	for(int i=0; i<intersectionPoints.size()-1; i++){
+	for(int i=4; i<intersectionPoints.size()-1; i++){
 		Vector3f temp = intersectionPoints.at(i);
 		Vector3f temp2 = intersectionPoints.at(i+1);
 		glBegin(GL_LINES);
@@ -78,12 +78,46 @@ void drawIntersectionPoints(){
 	}
 }
 
-void drawSnowMan() {
-	glColor3f(1.0f, 0.5f, 1.0f);
-// Draw Body
+void drawCameraPlane(){
+    glColor3f(0.9f, 0.9f, 0.9f);
+    glBegin(GL_QUADS);
+        glVertex3f(float(intersectionPoints.at(0).x), float(intersectionPoints.at(0).y), float(intersectionPoints.at(0).z));
+        glVertex3f(float(intersectionPoints.at(1).x), float(intersectionPoints.at(1).y), float(intersectionPoints.at(1).z));
+        glVertex3f(float(intersectionPoints.at(2).x), float(intersectionPoints.at(2).y), float(intersectionPoints.at(2).z));
+        glVertex3f(float(intersectionPoints.at(3).x), float(intersectionPoints.at(3).y), float(intersectionPoints.at(3).z));
+    glEnd();
+}
 
-	glTranslatef(0.0f, 0.75f, 0.0f);
-	glutSolidSphere(0.5f, 20, 20);
+void drawSnowMan() {
+
+
+    // for(int i=0; i<objects.size(); i++){
+    	glColor3f(0.3f, 0.8f, 0.9f);
+
+    	glTranslatef(10.0f, 0.75f, 0.0f);
+    	glutSolidSphere(1.0f, 40, 40);
+
+        glColor3f(0.3f, 0.8f, 0.1f);
+
+        glTranslatef(-10.0f, -0.75f, -0.0f);
+        glTranslatef(13.0f, 0.75f, 0.0f);
+        glutSolidSphere(1.0f, 40, 40);
+
+        glColor3f(0.3f, 0.2f, 0.9f);
+        glTranslatef(-13.0f, -0.75f, 0.0f);
+        glTranslatef(7.0f, 0.75f, 0.0f);
+        glutSolidSphere(1.0f, 40, 40);
+
+        glColor3f(0.5f, 0.8f, 0.9f);
+        glTranslatef(-7.0f, -0.75f, -0.0f);
+        glTranslatef(10.0f, 0.75f, 3.0f);
+        glutSolidSphere(1.0f, 40, 40);
+
+        glTranslatef(-10.0f, -0.75f, -3.0f);
+        
+    // }
+        // glColor3f(float(objects.at(i)->material.r), float(objects.at(i)->material.r), float(objects.at(i)->material.r));
+
 
 
 // 	glColor3f(0.1f, 0.5f, 0.5f);
@@ -125,15 +159,16 @@ void renderScene(void) {
 	if (deltaAngle)
 		computeDir(deltaAngle);
 
+    glClearColor(0.2f, 0.7f, 0.7f, 1.0f);
 	// Clear Color and Depth Buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Reset transformations
 	glLoadIdentity();
 	// Set the camera
-	gluLookAt(	x, 1.0f, z,
-				x+lx, 1.0f,  z+lz,
-				0.0f, 1.0f,  0.0f);
+	gluLookAt(	x, 0.75f, z,  //position
+				x+lx, 1.0f,  z+lz, //lookat
+				0.0f, 1.0f,  0.0f); //view up
 
 // Draw ground
 
@@ -145,16 +180,12 @@ void renderScene(void) {
 	// 	glVertex3f( 100.0f, 0.0f, -100.0f);
 	// glEnd();
 
-
-	for(int i = 0; i < 2; i++)
-		for(int j=0; j < 2; j++) {
-			glPushMatrix();
-			glTranslatef(i*10.0, 0, j*10.0);
-			drawSnowMan();
-			glPopMatrix();
-		}
+	glPushMatrix();
+	drawSnowMan();
+	glPopMatrix();
 
     drawIntersectionPoints();
+    drawCameraPlane();
 
 	glutSwapBuffers();
 }
@@ -206,18 +237,19 @@ int main(int argc, char **argv) {
 	cout << "[*] Ray-Tracing OpenGL implementation" << endl;
 	cout << "[.] Press Q to quit" << endl;
 
-	// init GLUT and create window
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowPosition(200, 200);
-	glutInitWindowSize(800, 600);
-	glutCreateWindow("Ray Tracing in OpenGL");
+	getIntersectionPoints(208, 6);
 
-	// fill intersection points
-	/*
-	(i. j) are the probes on the pixel
-	*/
-	getIntersectionPoints(383, 657);
+    // init GLUT and create window
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+    glutInitWindowPosition(200, 200);
+    glutInitWindowSize(cam.width, cam.height);
+    glutCreateWindow("Ray Tracing in OpenGL");
+
+    // fill intersection points
+    /*
+    (i. j) are the probes on the pixel
+    */
 
 
 	// register callbacks

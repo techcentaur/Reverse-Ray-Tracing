@@ -55,6 +55,9 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
         return c1;
     }
 
+    // if(iPoint){
+    //     intersectionPointsOfARay.at(1).push_back(iPoint);
+    // }
     // reflected ray recursive function
     Vector3f reflectionVector = ((nVector*(2.f*((ray.direction).dot(nVector)))) - ray.direction).normalizeIt();
     Vector3f reflectedPoint;
@@ -126,6 +129,13 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
 }
 
 vector<Vector3f> Tracer::getIntersectionPointsOfARay(vector<Object*> objects, vector<Light*> lights, Camera &cam, int i, int j){
+    /* Indexing of Intersection Points:
+    Index | Description
+    0 - For initial camera point
+    1 - For intersection point
+
+    */
+
     int width = cam.width;
     int height = cam.height;
     int superSamplingRays = 1;
@@ -138,15 +148,26 @@ vector<Vector3f> Tracer::getIntersectionPointsOfARay(vector<Object*> objects, ve
         float x = float(j + 0.5) / float(width);
         float y = float(i + 0.5) / float(height);
 
-        cout<<"X "<<x<<"  "<<"y "<<y<<endl;
-
         Ray3f newRay = cam.getRay(x, y);
+        
+        Vector3f v1(0, 0, 1);
+        Vector3f v2(float(1024 + 0.5) / float(width), 0, 1);
+        Vector3f v3(float(1024 + 0.5) / float(width), float(768 + 0.5) / float(width), 1);
+        Vector3f v4(0, float(768 + 0.5) / float(width), 1);
+        intersectionPointsOfARay.push_back(v1);
+        intersectionPointsOfARay.push_back(v2);
+        intersectionPointsOfARay.push_back(v3);
+        intersectionPointsOfARay.push_back(v4);
+        intersectionPointsOfARay.push_back(newRay.origin);
+
         RayCasting(newRay, objects, lights, 0);
-        newRay.print();
     }
     // drawInPixelBuffer(j, i, col.r, col.g, col.b);
     cout<<"Number of Intersections Points: "<<intersectionPointsOfARay.size()<<endl;
 
+    // for(Vector3f v: intersectionPointsOfARay){
+    //     v.print();
+    // }
     return intersectionPointsOfARay;
 }
 
@@ -212,12 +233,17 @@ void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesL
                     float y = float(i + 0.5) / float(height);
 
                     Ray3f newRay = cam.getRay(x, y);
+                    intersectionPointsOfARay.push_back(newRay.origin);
                     col += (RayCasting(newRay, objectList, lightSourcesList));
-                    if(intersectionPointsOfARay.size() > 1){
+                    if(intersectionPointsOfARay.size() > 3){
                         cam.getRay(x, y).print();
                         cout<<"X "<<x<<"  "<<"y "<<y<<endl;
                         cout<<"i "<<i<<"  "<<"j "<<j<<endl;
                         cout<<intersectionPointsOfARay.size()<<endl;
+
+                        for(int p=0; p<intersectionPointsOfARay.size(); p++){
+                            intersectionPointsOfARay.at(p).print();
+                        }
                     }
                 }
                 col /= float(superSamplingRays);
