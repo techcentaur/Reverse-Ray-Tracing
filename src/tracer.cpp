@@ -22,6 +22,7 @@
 using namespace std;
 
 vector<Vector3f> intersectionPointsOfARay;
+vector<Vector3f> normalPoints;
 
 bool Tracer::SceneRayCasting(Ray3f &ray, vector<Object*> objectList, Vector3f &iPoint, Vector3f &nVector, Material &iMaterial){
     float maxDistance = numeric_limits<float>::max();
@@ -50,43 +51,22 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
 
     bool temp = SceneRayCasting(ray, objectList, iPoint, nVector, iMaterial);
 
-    if(!temp || depth > this->recursionDepth){
+    if(!temp || depth >= this->recursionDepth){
         Color3f c1(0.2, 0.7, 0.7);
         return c1;
     }
 
-    iPoint.print();
-    // if(iPoint){
-    //     intersectionPointsOfARay.at(1).push_back(iPoint);
-    // }
+    // iPoint.print();
+
     // reflected ray recursive function
-    Vector3f reflectionVector = ((nVector*(2.f*((ray.direction).dot(nVector)))) - ray.direction).normalizeIt();
+    Vector3f reflectionVector = (ray.direction - (nVector*(2.f*((ray.direction).dot(nVector))))).normalizeIt();
     Vector3f reflectedPoint;
-    if(reflectionVector.dot(nVector) < 0) reflectedPoint = iPoint - nVector*1e-3;
-    else reflectedPoint = iPoint + nVector*1e-3;
+    if(reflectionVector.dot(nVector) < 0) reflectedPoint = iPoint - nVector*1e-5;
+    else reflectedPoint = iPoint + nVector*1e-5;
 
     Ray3f reflectedRay;
     reflectedRay.createRay(reflectedPoint, reflectionVector, true);
     Color3f reflectedSurfaceColor = RayCasting(reflectedRay, objectList, lSrcList, depth+1);
-
-
-    // refracted ray recursive function - first refraction
-    float eta = this->refractiveIndexOfMedium/iMaterial.refractiveIndex;
-    float costheta1 = max(-1.f, min(1.f, ray.direction.dot(nVector)));
-    float sintheat2 = max(-1.f, min(1.f, eta*costheta1));
-
-    Vector3f refractedVector = ((ray.direction)*eta + nVector*(costheta1*eta - sqrtf(1 - (sintheat2*sintheat2)))).normalizeIt();
-
-    Vector3f refractedPoint;
-    if(refractedVector.dot(nVector) < 0) refractedPoint = iPoint - nVector*1e-3 ;
-    else refractedPoint = iPoint + nVector*1e-3;
-
-    Ray3f refractedRay;
-    refractedRay.createRay(refractedPoint, refractedVector, true);
-
-    // final ray achieved after 2 refraction
-
-    Color3f refractedSurfaceColor = RayCasting(refractedRay, objectList, lSrcList, depth+1);
 
     // phong illumination model
     float diffuseLightIntensity = 0;
@@ -97,8 +77,8 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
  
         // shadow rays
         Vector3f shadowPoint;
-        if(lSrcDirection.dot(nVector) < 0) shadowPoint = iPoint - nVector*1e-3;
-        else shadowPoint = iPoint + nVector*1e-3;
+        if(lSrcDirection.dot(nVector) < 0) shadowPoint = iPoint - nVector*1e-5;
+        else shadowPoint = iPoint + nVector*1e-5;
 
         Vector3f shadowIPoint, shadowNVector;
         Material shadowIMaterial;
@@ -121,15 +101,18 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
 
 
     Color3f support(1.f, 1.f, 1.f);
-    Color3f ret = ((iMaterial.diffuseColor * diffuseLightIntensity)* iMaterial.diffuseReflectionCoefficient) + ((support * specularLightIntensity) * iMaterial.specularReflectionCoefficient) + reflectedSurfaceColor*iMaterial.reflectionCoefficient + refractedSurfaceColor*iMaterial.refractionCoefficient;
+    Color3f ret = ((iMaterial.diffuseColor * diffuseLightIntensity)* iMaterial.diffuseReflectionCoefficient) + ((support * specularLightIntensity) * iMaterial.specularReflectionCoefficient) + reflectedSurfaceColor*iMaterial.reflectionCoefficient;
 
     if (find(intersectionPointsOfARay.begin(), intersectionPointsOfARay.end(), iPoint) == intersectionPointsOfARay.end())
         intersectionPointsOfARay.push_back(iPoint);
 
+    if (find(normalPoints.begin(), normalPoints.end(), nVector) == normalPoints.end())
+        normalPoints.push_back(nVector);
+
     return ret;
 }
 
-vector<Vector3f> Tracer::getIntersectionPointsOfARay(vector<Object*> objects, vector<Light*> lights, Camera &cam, int i, int j){
+vector<vector<Vector3f>> Tracer::getIntersectionPointsOfARay(vector<Object*> objects, vector<Light*> lights, Camera &cam, int i, int j){
     /* Indexing of Intersection Points:
     Index | Description
     0 - For initial camera point
@@ -144,6 +127,7 @@ vector<Vector3f> Tracer::getIntersectionPointsOfARay(vector<Object*> objects, ve
     this->recursionDepth = cam.recursionDepth;
 
     intersectionPointsOfARay.clear();
+    normalPoints.clear();
 
     for(int s=0; s<superSamplingRays; s++){
         float x = float(j + 0.5) / float(width);
@@ -151,25 +135,22 @@ vector<Vector3f> Tracer::getIntersectionPointsOfARay(vector<Object*> objects, ve
 
         Ray3f newRay = cam.getRay(x, y);
         
-        Vector3f v1(0, 0, 1);
-        Vector3f v2(float(1024 + 0.5) / float(width), 0, 1);
-        Vector3f v3(float(1024 + 0.5) / float(width), float(768 + 0.5) / float(width), 1);
-        Vector3f v4(0, float(768 + 0.5) / float(width), 1);
-        intersectionPointsOfARay.push_back(v1);
-        intersectionPointsOfARay.push_back(v2);
-        intersectionPointsOfARay.push_back(v3);
-        intersectionPointsOfARay.push_back(v4);
         intersectionPointsOfARay.push_back(newRay.origin);
+        normalPoints.push_back(newRay.origin);
 
         RayCasting(newRay, objects, lights, 0);
     }
     // drawInPixelBuffer(j, i, col.r, col.g, col.b);
     cout<<"Number of Intersections Points: "<<intersectionPointsOfARay.size()<<endl;
 
-    // for(Vector3f v: intersectionPointsOfARay){
-    //     v.print();
-    // }
-    return intersectionPointsOfARay;
+    for(Vector3f v: intersectionPointsOfARay){
+        v.print();
+    }
+
+    vector<vector<Vector3f>> result;
+    result.push_back(intersectionPointsOfARay);
+    result.push_back(normalPoints);
+    return result;
 }
 
 void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesList, string fileName, Camera &cam, bool antiAliasing=false){
@@ -228,6 +209,7 @@ void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesL
         for(int i=height-1; i>=0; i--){
             for(int j=0; j<width; j++){
                 intersectionPointsOfARay.clear();
+                normalPoints.clear();
                 Color3f col(0.f, 0.f, 0.f);
                 for(int s=0; s<superSamplingRays; s++){
                     float x = float(j + 0.5) / float(width);
@@ -235,16 +217,13 @@ void Tracer::writeImage(vector<Object*> objectList, vector<Light*> lightSourcesL
 
                     Ray3f newRay = cam.getRay(x, y);
                     intersectionPointsOfARay.push_back(newRay.origin);
+                    
                     col += (RayCasting(newRay, objectList, lightSourcesList));
-                    if(intersectionPointsOfARay.size() > 3){
+                    if(intersectionPointsOfARay.size() > 4){
                         cam.getRay(x, y).print();
                         cout<<"X "<<x<<"  "<<"y "<<y<<endl;
                         cout<<"i "<<i<<"  "<<"j "<<j<<endl;
                         cout<<intersectionPointsOfARay.size()<<endl;
-
-                        for(int p=0; p<intersectionPointsOfARay.size(); p++){
-                            intersectionPointsOfARay.at(p).print();
-                        }
                     }
                 }
                 col /= float(superSamplingRays);

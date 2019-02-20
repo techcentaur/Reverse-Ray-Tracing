@@ -38,6 +38,7 @@ vector<Object*> objects;
 vector<Light*> lights;
 Camera cam;
 vector<Vector3f> intersectionPoints;
+vector<Vector3f> nPoints;
 
 void readObjects();
 
@@ -68,18 +69,41 @@ void changeSize(int w, int h) {
 void drawIntersectionPoints(){
     glColor3f(0.9f, 0.9f, 0.9f);
 
-	for(int i=4; i<intersectionPoints.size()-1; i++){
-		Vector3f temp = intersectionPoints.at(i);
-		Vector3f temp2 = intersectionPoints.at(i+1);
-		glBegin(GL_LINES);
-			glVertex3f(temp2.x, temp2.y, temp2.z);
+	Vector3f temp = intersectionPoints.at(0);
+	Vector3f temp2 = intersectionPoints.at(intersectionPoints.size()-1);
+	glBegin(GL_LINES);
+        glVertex3f(temp.x, temp.y, temp.z);
+        glVertex3f(temp2.x, temp2.y, temp2.z);
+	glEnd();
+
+    for(int i=intersectionPoints.size()-1; i>1; i--){
+        temp = intersectionPoints.at(i);
+        temp2 = intersectionPoints.at(i-1);
+
+        glBegin(GL_LINES);
             glVertex3f(temp.x, temp.y, temp.z);
-		glEnd();	
+            glVertex3f(temp2.x, temp2.y, temp2.z);
+        glEnd();
 	}
+
+    glColor3f(1.0f, 0.1f, 0.5f);
+
+    for(int i=1; i<nPoints.size(); i++){
+        temp2 = intersectionPoints.at(i);
+        temp = nPoints.at(i) + temp2;
+
+        glBegin(GL_LINES);
+            glVertex3f(temp.x, temp.y, temp.z);
+            glVertex3f(temp2.x, temp2.y, temp2.z);
+        glEnd();    
+    }
+    
+
 }
 
 void drawCameraPlane(){
     glColor3f(0.9f, 0.9f, 0.9f);
+
     glTranslatef(10.0f, 1.75f, 1.0f);
     glBegin(GL_QUADS);
         glVertex3f(0.0f,0.1f,0.1f);
@@ -92,7 +116,6 @@ void drawCameraPlane(){
 }
 
 void drawSnowMan() {
-    for(int i=0; i<objects.size(); i++){
 
     	glColor3f(0.3f, 0.8f, 0.9f);
 
@@ -128,37 +151,36 @@ void drawSnowMan() {
         // [*] Vector: (10.0715, -0.138762, 0.452753)
         // [*] Vector: (10.0285, 2.31128, 2.17287)
         // [*] Vector: (10.0584, 0.448467, 0.951665)
+
+
+        // for(int i=0; i<objects.size(); i++){
+        //     glColor3f(float(objects.at(i)->material.r), float(objects.at(i)->material.r), float(objects.at(i)->material.r));
+            
+        //     glTranslatef(float(objects.at(i)->center.x), float(objects.at(i)->center.y), float(objects.at(i)->center.z));
+        //     glutWireSphere(float(objects.at(i)->radius), 40, 40);
+
+        //     glTranslatef(float(-1*(objects.at(i)->center.x)), float(-1*(objects.at(i)->center.y)), float(-1*(objects.at(i)->center.z)));
+        // }
+
+
+    // 	glColor3f(0.1f, 0.5f, 0.5f);
+    // // Draw Head
+    // 	glTranslatef(0.0f, 1.0f, 0.0f);
+    // 	glutWireSphere(0.25f,20,20);
+
+    	// glPushMatrix();
+    	// glColor3f(0.0f,0.0f,0.0f);
+    	// glTranslatef(0.05f, 0.10f, 0.18f);
+    	// glutWireSphere(0.05f,10,10);
+    	// glTranslatef(-0.1f, 0.0f, 0.0f);
+    	// glutWireSphere(0.05f,10,10);
+    	// glPopMatrix();
+
+    // Draw Cone
+    	// glColor3f(0.9f, 0.1f , 0.5f);
+    	// glRotatef(0.1f, 1.0f, 0.0f, 0.0f);
+    	// glutWireCone(0.2f,0.5f,10,2);
     }
-
-
-    // for(int i=0; i<objects.size(); i++){
-    //     glColor3f(float(objects.at(i)->material.r), float(objects.at(i)->material.r), float(objects.at(i)->material.r));
-        
-    //     glTranslatef(float(objects.at(i)->center.x), float(objects.at(i)->center.y), float(objects.at(i)->center.z));
-    //     glutWireSphere(float(objects.at(i)->radius), 40, 40);
-
-    //     glTranslatef(float(-1*(objects.at(i)->center.x)), float(-1*(objects.at(i)->center.y)), float(-1*(objects.at(i)->center.z)));
-    // }
-
-
-// 	glColor3f(0.1f, 0.5f, 0.5f);
-// // Draw Head
-// 	glTranslatef(0.0f, 1.0f, 0.0f);
-// 	glutWireSphere(0.25f,20,20);
-
-	// glPushMatrix();
-	// glColor3f(0.0f,0.0f,0.0f);
-	// glTranslatef(0.05f, 0.10f, 0.18f);
-	// glutWireSphere(0.05f,10,10);
-	// glTranslatef(-0.1f, 0.0f, 0.0f);
-	// glutWireSphere(0.05f,10,10);
-	// glPopMatrix();
-
-// Draw Cone
-	// glColor3f(0.9f, 0.1f , 0.5f);
-	// glRotatef(0.1f, 1.0f, 0.0f, 0.0f);
-	// glutWireCone(0.2f,0.5f,10,2);
-}
 
 void computePos(float deltaMove) {
 
@@ -250,7 +272,9 @@ void getIntersectionPoints(int i, int j){
 
     // read input file (in format) and get intersection points from ray tracing
     readObjects();
-    intersectionPoints = rayTracer.getIntersectionPointsOfARay(objects, lights, cam, i, j);
+    vector<vector<Vector3f>> v = rayTracer.getIntersectionPointsOfARay(objects, lights, cam, i, j);
+    intersectionPoints = v.at(0);
+    nPoints =v.at(1);
 }
 
 
@@ -259,7 +283,7 @@ int main(int argc, char **argv) {
 	cout << "[*] Ray-Tracing OpenGL implementation" << endl;
 	cout << "[.] Press Q to quit" << endl;
 
-	getIntersectionPoints(27, 535);
+	getIntersectionPoints(382, 881);
 
     // init GLUT and create window
     glutInit(&argc, argv);
@@ -272,7 +296,6 @@ int main(int argc, char **argv) {
     /*
     (i. j) are the probes on the pixel
     */
-
 
 	// register callbacks
 	glutDisplayFunc(renderScene);

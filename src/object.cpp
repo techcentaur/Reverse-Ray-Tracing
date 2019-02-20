@@ -36,15 +36,15 @@ bool Sphere::getIntersection(Ray3f &ray, float &t0){
 	
 	float t1 = lineProjection + projection2;
 	float temp;
-	if(t0>=0){
+	if(t0<0){
 		temp = t0;
 		t0 = t1;
-	}else{
+	}
+	if(t0<0){
 		 return false;
 	} 
 
 	t1 = temp;
-
 	return true;
 }
 
