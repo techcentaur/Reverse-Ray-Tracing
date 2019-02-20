@@ -1,3 +1,3 @@
 rm test
-g++ -o test test.cpp vector.cpp
+g++ -o test vector.cpp matrix.cpp
 ./test
