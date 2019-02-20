@@ -36,30 +36,28 @@ Matrix::Matrix(const Matrix &m){
 	}
 }
 
-Matrix Matrix::operator = (const Matrix &m){
-	Matrix temp(mat.size(),m.mat[0].size());
-
-	for(int i=0; i<mat.size(); i++){
-		for(int j=0; j<mat[0].size(); j++){
-			temp.mat[i][j] = m.mat[i][j];
+void Matrix::operator = (const Matrix &m){
+	for(int i=0; i<this->mat.size(); i++){
+		for(int j=0; j<this->mat[0].size(); j++){
+			this->mat[i][j] = m.mat[i][j];
 		}
 	}
-	return temp;
 }
 
 Matrix Matrix::operator * (const Matrix &m){
 
-	if(mat[0].size() != m.mat.size()){throw invalid_argument( "sizes of matrices dont match for multiplication" );}
+	if(this->mat[0].size() != m.mat.size()){throw invalid_argument( "sizes of matrices dont match for multiplication" );}
 
-	Matrix temp(mat.size(),m.mat[0].size());
+	Matrix temp(this->mat.size(), m.mat[0].size());
 
-	for(int i=0; i<mat.size(); i++){
+	for(int i=0; i<this->mat.size(); i++){
 		for(int j=0; j<m.mat[0].size(); j++){
 			for(int k=0; k<mat[0].size(); k++){
-				temp.mat[i][j] += mat[i][k] * m.mat[k][j];
+				temp.mat[i][j] += this->mat[i][k] * m.mat[k][j];
 			}
 		}
 	}
+
 	return temp;
 }
 

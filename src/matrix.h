@@ -22,7 +22,7 @@ class Matrix{
 		Vector3f toVector3f();
 
 		Matrix operator * (const Matrix &m);
-		Matrix operator = (const Matrix &m);
+		void operator = (const Matrix &m);
 
 		Matrix transpose();
 		double determinant2(const Matrix &m);
