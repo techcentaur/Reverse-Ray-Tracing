@@ -46,6 +46,7 @@ bool Sphere::getIntersection(Ray3f &ray, float &t0){
 
 	vector<vector<float>> M;
 	M.assign(3, vector<float>(3,0));
+	
 	for (int i=0; i<3; i++) M[i][i] = 0;
 	M[0][0] = 1; M[0][1] = 1; M[0][2] = 1;
 	M[1][0] = 0; M[1][1] = 1; M[1][2] = 1;
