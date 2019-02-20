@@ -80,6 +80,7 @@ void drawIntersectionPoints(){
 
 void drawCameraPlane(){
     glColor3f(0.9f, 0.9f, 0.9f);
+    glTranslatef(10.0f, 1.75f, 1.0f);
     glBegin(GL_QUADS);
         glVertex3f(float(intersectionPoints.at(0).x), float(intersectionPoints.at(0).y), float(intersectionPoints.at(0).z));
         glVertex3f(float(intersectionPoints.at(1).x), float(intersectionPoints.at(1).y), float(intersectionPoints.at(1).z));
@@ -89,9 +90,8 @@ void drawCameraPlane(){
 }
 
 void drawSnowMan() {
+    for(int i=0; i<objects.size(); i++){
 
-
-    // for(int i=0; i<objects.size(); i++){
     	glColor3f(0.3f, 0.8f, 0.9f);
 
     	glTranslatef(10.0f, 0.75f, 0.0f);
@@ -113,11 +113,18 @@ void drawSnowMan() {
         glTranslatef(10.0f, 0.75f, 3.0f);
         glutSolidSphere(1.0f, 40, 40);
 
-        glTranslatef(-10.0f, -0.75f, -3.0f);
-        
-    // }
-        // glColor3f(float(objects.at(i)->material.r), float(objects.at(i)->material.r), float(objects.at(i)->material.r));
+        glTranslatef(-10.0f, -0.75f, -3.0f);   
+    }
 
+
+    // for(int i=0; i<objects.size(); i++){
+    //     glColor3f(float(objects.at(i)->material.r), float(objects.at(i)->material.r), float(objects.at(i)->material.r));
+        
+    //     glTranslatef(float(objects.at(i)->center.x), float(objects.at(i)->center.y), float(objects.at(i)->center.z));
+    //     glutSolidSphere(float(objects.at(i)->radius), 40, 40);
+
+    //     glTranslatef(float(-1*(objects.at(i)->center.x)), float(-1*(objects.at(i)->center.y)), float(-1*(objects.at(i)->center.z)));
+    // }
 
 
 // 	glColor3f(0.1f, 0.5f, 0.5f);
@@ -237,7 +244,7 @@ int main(int argc, char **argv) {
 	cout << "[*] Ray-Tracing OpenGL implementation" << endl;
 	cout << "[.] Press Q to quit" << endl;
 
-	getIntersectionPoints(208, 6);
+	getIntersectionPoints(27, 535);
 
     // init GLUT and create window
     glutInit(&argc, argv);

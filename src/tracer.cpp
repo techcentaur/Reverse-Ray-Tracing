@@ -52,6 +52,7 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
 
     if(!temp || depth > this->recursionDepth){
         Color3f c1(0.2, 0.7, 0.7);
+        // intersectionPointsOfARay.push_back(iPoint);
         return c1;
     }
 
@@ -69,23 +70,23 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
     Color3f reflectedSurfaceColor = RayCasting(reflectedRay, objectList, lSrcList, depth+1);
 
 
-    // refracted ray recursive function - first refraction
-    float eta = this->refractiveIndexOfMedium/iMaterial.refractiveIndex;
-    float costheta1 = max(-1.f, min(1.f, ray.direction.dot(nVector)));
-    float sintheat2 = max(-1.f, min(1.f, eta*costheta1));
+    // // refracted ray recursive function - first refraction
+    // float eta = this->refractiveIndexOfMedium/iMaterial.refractiveIndex;
+    // float costheta1 = max(-1.f, min(1.f, ray.direction.dot(nVector)));
+    // float sintheat2 = max(-1.f, min(1.f, eta*costheta1));
 
-    Vector3f refractedVector = ((ray.direction)*eta + nVector*(costheta1*eta - sqrtf(1 - (sintheat2*sintheat2)))).normalizeIt();
+    // Vector3f refractedVector = ((ray.direction)*eta + nVector*(costheta1*eta - sqrtf(1 - (sintheat2*sintheat2)))).normalizeIt();
 
-    Vector3f refractedPoint;
-    if(refractedVector.dot(nVector) < 0) refractedPoint = iPoint - nVector*1e-3 ;
-    else refractedPoint = iPoint + nVector*1e-3;
+    // Vector3f refractedPoint;
+    // if(refractedVector.dot(nVector) < 0) refractedPoint = iPoint - nVector*1e-3 ;
+    // else refractedPoint = iPoint + nVector*1e-3;
 
-    Ray3f refractedRay;
-    refractedRay.createRay(refractedPoint, refractedVector, true);
+    // Ray3f refractedRay;
+    // refractedRay.createRay(refractedPoint, refractedVector, true);
 
-    // final ray achieved after 2 refraction
+    // // final ray achieved after 2 refraction
 
-    Color3f refractedSurfaceColor = RayCasting(refractedRay, objectList, lSrcList, depth+1);
+    // Color3f refractedSurfaceColor = RayCasting(refractedRay, objectList, lSrcList, depth+1);
 
     // phong illumination model
     float diffuseLightIntensity = 0;
@@ -120,7 +121,7 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
 
 
     Color3f support(1.f, 1.f, 1.f);
-    Color3f ret = ((iMaterial.diffuseColor * diffuseLightIntensity)* iMaterial.diffuseReflectionCoefficient) + ((support * specularLightIntensity) * iMaterial.specularReflectionCoefficient) + reflectedSurfaceColor*iMaterial.reflectionCoefficient + refractedSurfaceColor*iMaterial.refractionCoefficient;
+    Color3f ret = ((iMaterial.diffuseColor * diffuseLightIntensity)* iMaterial.diffuseReflectionCoefficient) + ((support * specularLightIntensity) * iMaterial.specularReflectionCoefficient) + reflectedSurfaceColor*iMaterial.reflectionCoefficient;
 
     if (find(intersectionPointsOfARay.begin(), intersectionPointsOfARay.end(), iPoint) == intersectionPointsOfARay.end())
         intersectionPointsOfARay.push_back(iPoint);
@@ -165,9 +166,10 @@ vector<Vector3f> Tracer::getIntersectionPointsOfARay(vector<Object*> objects, ve
     // drawInPixelBuffer(j, i, col.r, col.g, col.b);
     cout<<"Number of Intersections Points: "<<intersectionPointsOfARay.size()<<endl;
 
-    // for(Vector3f v: intersectionPointsOfARay){
-    //     v.print();
-    // }
+    for(Vector3f v: intersectionPointsOfARay){
+        v.print();
+    }
+
     return intersectionPointsOfARay;
 }
 
