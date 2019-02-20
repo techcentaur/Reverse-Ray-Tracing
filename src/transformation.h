@@ -22,6 +22,7 @@ class Transformation{
                     Vector3f shearingZAboutX(const Vector3f &v, float zx);
                     Vector3f shearingYAboutZ(const Vector3f &v, float yz);
                     Vector3f shearingZAboutY(const Vector3f &v, float zy);
+
 };
 
 #endif

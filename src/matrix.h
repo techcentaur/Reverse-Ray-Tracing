@@ -25,7 +25,11 @@ class Matrix{
 		Matrix operator = (const Matrix &m);
 
 		Matrix transpose();
-		Matrix inverse();
+		double determinant2(const Matrix &m);
+		double determinant3(const Matrix &m);
+		double determinant4(const Matrix &m);
+
+		Matrix inverse(const Matrix &m);
 };
 
 #endif
