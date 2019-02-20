@@ -49,7 +49,7 @@ Matrix Matrix::operator = (const Matrix &m){
 
 Matrix Matrix::operator * (const Matrix &m){
 
-	if(mat[0].size() != m.mat.size()){throw std::invalid_argument( "sizes of matrices dont match for multiplication" );}
+	if(mat[0].size() != m.mat.size()){throw invalid_argument( "sizes of matrices dont match for multiplication" );}
 
 	Matrix temp(mat.size(),m.mat[0].size());
 
@@ -64,7 +64,7 @@ Matrix Matrix::operator * (const Matrix &m){
 }
 
 Vector3f Matrix::toVector3f() {
-	if(mat[0].size() != 1 && mat.size() != 4){throw std::invalid_argument( "matrix is not of size 4*1. Can't be converted to Vector3f" );}
+	if(mat[0].size() != 1 && mat.size() != 4){throw invalid_argument( "matrix is not of size 4*1. Can't be converted to Vector3f" );}
 	return Vector3f(mat[0][0], mat[1][0], mat[2][0]);
 }
 

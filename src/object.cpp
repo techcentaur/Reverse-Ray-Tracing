@@ -9,6 +9,7 @@
 #include <limits>
 #include <fstream>
 #include "color.h"
+#include "matrix.h"
 
 using namespace std;
 
@@ -17,9 +18,11 @@ Object::Object(Material &m){
 }
 
 // -----------------------------Sphere---------------------------
-Sphere::Sphere(float r, Vector3f &vec, Material &m):Object(m){
+Sphere::Sphere(float r, Vector3f &vec, Material &m, string &s, vector<Vector3f> transf):Object(m){
 	radius = r; center = vec; material = m;
 	readTexture();
+	order = s;
+	transformations = transf;
 }
 
 void Sphere::readTexture(){
@@ -42,6 +45,28 @@ void Sphere::readTexture(){
 bool Sphere::getIntersection(Ray3f &ray, float &t0){
 
 	//-------------------transformations---------
+	// cout<<"size "<<transformations.size()<<endl;
+	
+	Matrix m; 
+	for(int i=0; i<transformations.size(); i++){
+		if(string[i]=="T"){
+			Matrix temp;
+			temp.mat[3][0] = transformations.at(i).x;
+			temp.mat[3][1] = transformations.at(i).y;
+			temp.mat[3][2] = transformations.at(i).z;
+			m = m*temp;
+		}
+		else if(string[i]=="S"){
+			Matrix temp;
+			temp.mat[0][0] = transformations.at(i).x;
+			temp.mat[1][1] = transformations.at(i).y;
+			temp.mat[2][2] = transformations.at(i).z;
+			m = m*temp;			
+		}
+	}
+
+
+
 	Vector3f v(0, 0, 0);
 
 	vector<vector<float>> M;
