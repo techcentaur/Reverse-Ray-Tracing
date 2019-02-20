@@ -25,7 +25,7 @@ float angle = 0.0f;
 float lx=10.0f,lz=0.0f;
 
 // XZ position of the camera
-float x=10.0f, z=2.0f;
+float x=10.0f, z=1.0f;
 
 // the key states. These variables will be zero
 //when no key is being presses
@@ -82,11 +82,13 @@ void drawCameraPlane(){
     glColor3f(0.9f, 0.9f, 0.9f);
     glTranslatef(10.0f, 1.75f, 1.0f);
     glBegin(GL_QUADS);
-        glVertex3f(float(intersectionPoints.at(0).x), float(intersectionPoints.at(0).y), float(intersectionPoints.at(0).z));
-        glVertex3f(float(intersectionPoints.at(1).x), float(intersectionPoints.at(1).y), float(intersectionPoints.at(1).z));
-        glVertex3f(float(intersectionPoints.at(2).x), float(intersectionPoints.at(2).y), float(intersectionPoints.at(2).z));
-        glVertex3f(float(intersectionPoints.at(3).x), float(intersectionPoints.at(3).y), float(intersectionPoints.at(3).z));
+        glVertex3f(0.0f,0.1f,0.1f);
+        glVertex3f(0.0f,0.1f,-0.1f);
+        glVertex3f(0.0f,-0.1f,-0.1f);
+        glVertex3f(0.0f,-0.1f,0.1f);
     glEnd();
+
+    glTranslatef(-10.0f, -1.75f, -1.0f);
 }
 
 void drawSnowMan() {
@@ -95,25 +97,37 @@ void drawSnowMan() {
     	glColor3f(0.3f, 0.8f, 0.9f);
 
     	glTranslatef(10.0f, 0.75f, 0.0f);
-    	glutSolidSphere(1.0f, 40, 40);
+    	glutWireSphere(1.0f, 40, 40);
 
         glColor3f(0.3f, 0.8f, 0.1f);
 
         glTranslatef(-10.0f, -0.75f, -0.0f);
         glTranslatef(13.0f, 0.75f, 0.0f);
-        glutSolidSphere(1.0f, 40, 40);
+        glutWireSphere(1.0f, 40, 40);
 
         glColor3f(0.3f, 0.2f, 0.9f);
         glTranslatef(-13.0f, -0.75f, 0.0f);
         glTranslatef(7.0f, 0.75f, 0.0f);
-        glutSolidSphere(1.0f, 40, 40);
+        glutWireSphere(1.0f, 40, 40);
 
         glColor3f(0.5f, 0.8f, 0.9f);
         glTranslatef(-7.0f, -0.75f, -0.0f);
         glTranslatef(10.0f, 0.75f, 3.0f);
-        glutSolidSphere(1.0f, 40, 40);
+        glutWireSphere(1.0f, 40, 40);
 
-        glTranslatef(-10.0f, -0.75f, -3.0f);   
+        glTranslatef(-10.0f, -0.75f, -3.0f);
+        
+        glColor3f(1.0f, 0.1f, 0.1f);   
+        glutWireSphere(0.05f, 40, 40);
+
+        // [*] Vector: (0, 0, 1)
+        // [*] Vector: (1, 0, 1)
+        // [*] Vector: (1, 0.75, 1)
+        // [*] Vector: (0, 0.75, 1)
+        // [*] Vector: (10, 1.75, 1)
+        // [*] Vector: (10.0715, -0.138762, 0.452753)
+        // [*] Vector: (10.0285, 2.31128, 2.17287)
+        // [*] Vector: (10.0584, 0.448467, 0.951665)
     }
 
 
@@ -121,7 +135,7 @@ void drawSnowMan() {
     //     glColor3f(float(objects.at(i)->material.r), float(objects.at(i)->material.r), float(objects.at(i)->material.r));
         
     //     glTranslatef(float(objects.at(i)->center.x), float(objects.at(i)->center.y), float(objects.at(i)->center.z));
-    //     glutSolidSphere(float(objects.at(i)->radius), 40, 40);
+    //     glutWireSphere(float(objects.at(i)->radius), 40, 40);
 
     //     glTranslatef(float(-1*(objects.at(i)->center.x)), float(-1*(objects.at(i)->center.y)), float(-1*(objects.at(i)->center.z)));
     // }
@@ -130,20 +144,20 @@ void drawSnowMan() {
 // 	glColor3f(0.1f, 0.5f, 0.5f);
 // // Draw Head
 // 	glTranslatef(0.0f, 1.0f, 0.0f);
-// 	glutSolidSphere(0.25f,20,20);
+// 	glutWireSphere(0.25f,20,20);
 
 	// glPushMatrix();
 	// glColor3f(0.0f,0.0f,0.0f);
 	// glTranslatef(0.05f, 0.10f, 0.18f);
-	// glutSolidSphere(0.05f,10,10);
+	// glutWireSphere(0.05f,10,10);
 	// glTranslatef(-0.1f, 0.0f, 0.0f);
-	// glutSolidSphere(0.05f,10,10);
+	// glutWireSphere(0.05f,10,10);
 	// glPopMatrix();
 
 // Draw Cone
 	// glColor3f(0.9f, 0.1f , 0.5f);
 	// glRotatef(0.1f, 1.0f, 0.0f, 0.0f);
-	// glutSolidCone(0.2f,0.5f,10,2);
+	// glutWireCone(0.2f,0.5f,10,2);
 }
 
 void computePos(float deltaMove) {
@@ -173,7 +187,7 @@ void renderScene(void) {
 	// Reset transformations
 	glLoadIdentity();
 	// Set the camera
-	gluLookAt(	x, 0.75f, z,  //position
+	gluLookAt(	x, 1.75f, z,  //position
 				x+lx, 1.0f,  z+lz, //lookat
 				0.0f, 1.0f,  0.0f); //view up
 
@@ -203,24 +217,25 @@ void pressKey(int key, int xx, int yy) {
 	switch (key) {
 		case GLUT_KEY_LEFT : deltaAngle = -0.01f; break;
 		case GLUT_KEY_RIGHT : deltaAngle = 0.01f; break;
-		case GLUT_KEY_UP : deltaMove = 0.5f; break;
-		case GLUT_KEY_DOWN : deltaMove = -0.5f; break;
+		case GLUT_KEY_UP : deltaMove = 0.2f; break;
+		case GLUT_KEY_DOWN : deltaMove = -0.2f; break;
 	}
 }
 
 void releaseKey(int key, int x, int y) {
 
 	switch (key) {
-		case GLUT_KEY_LEFT :
-		case GLUT_KEY_RIGHT : deltaAngle = 0.0f;break;
-		case GLUT_KEY_UP :
-		case GLUT_KEY_DOWN : deltaMove = 0;break;
+		case GLUT_KEY_LEFT :deltaAngle = 0.0f; break;
+		case GLUT_KEY_RIGHT : deltaAngle = 0.0f; break;
+		case GLUT_KEY_UP : deltaMove = 0.0f; break;
+		case GLUT_KEY_DOWN : deltaMove = 0.0f; break;
 	}
 }
 
 void keyboardEvents(unsigned char key, int x, int y){
 	switch (key) {
 		case 'q':
+			exit(0);
 		case 'Q':
 			exit(0);
 		default:
