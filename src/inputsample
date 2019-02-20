@@ -20,6 +20,8 @@ OBJECT
 		REFRACTIVE_INDEX 0.0
 		ORIGIN -3 0 -20
 		RADIUS 5
+		T 2.0 2.0 2.0
+		S 1.5 1.5 1.5
 CUT
 
 negative y direction ->

@@ -34,10 +34,11 @@ public:
 	Color3f recentColor;
 	vector<Color3f> texture;
 	int textureCount;
-
+	string order;
+	vector<Vector3f> transformations;
 
 	Sphere();	
-	Sphere(float radius, Vector3f &vec, Material &m);
+	Sphere(float radius, Vector3f &vec, Material &m, string &s, vector<Vector3f> transf);
 
 	void readTexture();
 	bool getIntersection(Ray3f &ray, float &t);

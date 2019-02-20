@@ -125,6 +125,7 @@ int main(int argc, char** argv){
                 }
             }
         }
+
         if(type=="CAMERA"){
             Vector3f lookFrom, lookAt, viewUp;
             float fov, height, width, sSampling, recursionDepth;
@@ -162,9 +163,12 @@ int main(int argc, char** argv){
                 ifs>>type;
                 if(type == "SPHERE"){
                     Vector3f origin;
+                    vector<Vector3f> transformations;
+                    string order="";
                     Color3f color;
                     float sRE, sRC, dRC, reflecC, refracC, rI, radius;
                     while(ifs.good()){
+                        Vector3f temp;
                         ifs>>type;
                         if(type=="COLOR"){
                             ifs>>color.r>>color.g>>color.b;
@@ -193,13 +197,23 @@ int main(int argc, char** argv){
                         else if(type=="RADIUS"){
                             ifs>>radius;
                         }
+                        else if(type=="T"){
+                            order = order + "T";
+                            ifs>>temp.x>>temp.y>>temp.z;
+                            transformations.push_back(temp);
+                        }
+                        else if(type=="S"){
+                            order = order + "S";
+                            ifs>>temp.x>>temp.y>>temp.z;
+                            transformations.push_back(temp);
+                        }
                         else {
                             break;
                         }
                     }
                     Material m;
                     m.fillColor(color, sRE, sRC, dRC, reflecC, refracC, rI);
-                    Object *s = new Sphere(radius, origin, m);
+                    Object *s = new Sphere(radius, origin, m, order, transformations);
                     objects.push_back(s);
                 }
                 // else if(type == "CONE"){
