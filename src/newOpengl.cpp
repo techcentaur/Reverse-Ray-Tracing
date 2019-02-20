@@ -72,8 +72,8 @@ void drawIntersectionPoints(){
 		Vector3f temp = intersectionPoints.at(i);
 		Vector3f temp2 = intersectionPoints.at(i+1);
 		glBegin(GL_LINES);
-			glVertex3f(temp.x, temp.y, temp.z);
 			glVertex3f(temp2.x, temp2.y, temp2.z);
+            glVertex3f(temp.x, temp.y, temp.z);
 		glEnd();	
 	}
 }
