@@ -280,7 +280,7 @@ void getIntersectionPoints(int i, int j){
 
 
 int main(int argc, char **argv) {
-	cout << "[*] Ray-Tracing OpenGL implementation" << endl;
+	cout << "[*] Ray-Tracing OpenGL Process Simulation" << endl;
 	cout << "[.] Press Q to quit" << endl;
 
 	getIntersectionPoints(382, 881);
@@ -290,7 +290,7 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(200, 200);
     glutInitWindowSize(cam.width, cam.height);
-    glutCreateWindow("Ray Tracing in OpenGL");
+    glutCreateWindow("Process Simulation: Ray Tracing");
 
     // fill intersection points
     /*
