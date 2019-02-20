@@ -55,6 +55,7 @@ Color3f Tracer::RayCasting(Ray3f &ray, vector<Object*> objectList, vector<Light*
         return c1;
     }
 
+    iPoint.print();
     // if(iPoint){
     //     intersectionPointsOfARay.at(1).push_back(iPoint);
     // }
