@@ -38,7 +38,7 @@ public:
 	vector<Vector3f> transformations;
 
 	Sphere();	
-	Sphere(float radius, Vector3f &vec, Material &m, string &s, vector<Vector3f> transf);
+	Sphere(float radius, Vector3f &vec, Material &m, string s, vector<Vector3f> transf);
 
 	void readTexture();
 	bool getIntersection(Ray3f &ray, float &t);

@@ -9,6 +9,7 @@
 #include <limits>
 #include <fstream>
 #include "color.h"
+#include <string>
 #include "matrix.h"
 
 using namespace std;
@@ -18,10 +19,11 @@ Object::Object(Material &m){
 }
 
 // -----------------------------Sphere---------------------------
-Sphere::Sphere(float r, Vector3f &vec, Material &m, string &s, vector<Vector3f> transf):Object(m){
+Sphere::Sphere(float r, Vector3f &vec, Material &m, string s, vector<Vector3f> transf):Object(m){
 	radius = r; center = vec; material = m;
 	readTexture();
 	order = s;
+	cout<<order<<endl;
 	transformations = transf;
 }
 
@@ -47,23 +49,35 @@ bool Sphere::getIntersection(Ray3f &ray, float &t0){
 	//-------------------transformations---------
 	// cout<<"size "<<transformations.size()<<endl;
 	
-	Matrix m; 
-	for(int i=0; i<transformations.size(); i++){
-		if(string[i]=="T"){
-			Matrix temp;
-			temp.mat[3][0] = transformations.at(i).x;
-			temp.mat[3][1] = transformations.at(i).y;
-			temp.mat[3][2] = transformations.at(i).z;
-			m = m*temp;
-		}
-		else if(string[i]=="S"){
-			Matrix temp;
-			temp.mat[0][0] = transformations.at(i).x;
-			temp.mat[1][1] = transformations.at(i).y;
-			temp.mat[2][2] = transformations.at(i).z;
-			m = m*temp;			
-		}
-	}
+	// Matrix m; 
+	// for(int i=0; i<transformations.size(); i++){
+	// 	string s(1, order[i]);
+	// 	if(s.compare("T")==0){
+	// 		Matrix temp;
+	// 		temp.mat[3][0] = transformations.at(i).x;
+	// 		temp.mat[3][1] = transformations.at(i).y;
+	// 		temp.mat[3][2] = transformations.at(i).z;
+	// 	    m = temp * m;
+	// 	    m.print();
+	// 	}
+	// 	else if(s.compare("S")==0){
+	// 		Matrix temp;
+	// 		temp.mat[0][0] = transformations.at(i).x;
+	// 		temp.mat[1][1] = transformations.at(i).y;
+	// 		temp.mat[2][2] = transformations.at(i).z;
+	// 	    Matrix temp3(4, 4);
+	// 	    for (int p = 0; p < 4; p++) {
+	// 	        for (int j = 0; j < 4; j++) {
+	// 	            int num = 0;
+	// 	            for (int k = 0; k < 4; k++) {
+	// 	                num += m.mat[p][k] * temp.mat[k][j];
+	// 	            }
+	// 	            temp3.mat[p][j] = num;
+	// 	        }
+	// 	    }
+	// 	    m = temp3;
+	// 	}
+	// }
 
 
 
@@ -79,7 +93,7 @@ bool Sphere::getIntersection(Ray3f &ray, float &t0){
 
 	vector<vector<float>> Minv = M;
 
-	Vector3f d(0, 0, 0);
+	Vector3f d(2, 2, 2);
 
 	Ray3f newRay;
 
@@ -93,7 +107,7 @@ bool Sphere::getIntersection(Ray3f &ray, float &t0){
 	temp2 = temp2 + d;
 	newRay.createRay(temp2, temp3, true);
 
-	// ray = newRay;
+	ray = newRay;
 
 	//-------------------transformations:-----------
 
@@ -128,15 +142,15 @@ bool Sphere::getIntersection(Ray3f &ray, float &t0){
 		recentNormal = (recentIntersectionPoint - this->center).normalizeIt();
 	}
 
-	recentColor = getTexture(recentIntersectionPoint);
-	this->material.changeColor(recentColor);
+	// recentColor = getTexture(recentIntersectionPoint);
+	// this->material.changeColor(recentColor);
 
 	//---------------transformations on Normal------------
-	// Minv = getInverseMatrix(Minv);
-	// temp = recentNormal;
-	// Minv = getTranspose(Minv);
-	// Vector3f tempRec(Minv[0][0]*temp.x + Minv[0][1]*temp.y + Minv[0][2]*temp.z , Minv[1][0]*temp.x + Minv[1][1]*temp.y + Minv[1][2]*temp.z, Minv[2][0]*temp.x + Minv[2][1]*temp.y + Minv[2][2]*temp.z);
-	// recentNormal = tempRec;
+	Minv = getInverseMatrix(Minv);
+	temp = recentNormal;
+	Minv = getTranspose(Minv);
+	Vector3f tempRec(Minv[0][0]*temp.x + Minv[0][1]*temp.y + Minv[0][2]*temp.z , Minv[1][0]*temp.x + Minv[1][1]*temp.y + Minv[1][2]*temp.z, Minv[2][0]*temp.x + Minv[2][1]*temp.y + Minv[2][2]*temp.z);
+	recentNormal = tempRec;
 
 	return true;
 }
@@ -514,4 +528,124 @@ void Plane::print(){
 
 // void Cone::print(){
 // 	cout<<"Not implemented"<<endl;
+// // }
+
+
+
+// bool Sphere::getIntersection(Ray3f &ray, float &t0){
+
+// 	//-------------------transformations---------
+// 	// cout<<"size "<<transformations.size()<<endl;
+	
+// 	Matrix m; 
+// 	for(int i=0; i<transformations.size(); i++){
+// 		string s(1, order[i]);
+// 		if(s.compare("T")==0){
+// 			Matrix temp;
+// 			temp.mat[3][0] = transformations.at(i).x;
+// 			temp.mat[3][1] = transformations.at(i).y;
+// 			temp.mat[3][2] = transformations.at(i).z;
+// 		    Matrix temp3(4, 4);
+// 		    for (int p = 0; p < 4; p++) {
+// 		        for (int j = 0; j < 4; j++) {
+// 		            int num = 0;
+// 		            for (int k = 0; k < 4; k++) {
+// 		                num += m.mat[p][k] * temp.mat[k][j];
+// 		            }
+// 		            temp3.mat[p][j] = num;
+// 		        }
+// 		    }
+// 		    m = temp3;
+// 		}
+// 		else if(s.compare("S")==0){
+// 			Matrix temp;
+// 			temp.mat[0][0] = transformations.at(i).x;
+// 			temp.mat[1][1] = transformations.at(i).y;
+// 			temp.mat[2][2] = transformations.at(i).z;
+// 		    Matrix temp3(4, 4);
+// 		    for (int p = 0; p < 4; p++) {
+// 		        for (int j = 0; j < 4; j++) {
+// 		            int num = 0;
+// 		            for (int k = 0; k < 4; k++) {
+// 		                num += m.mat[p][k] * temp.mat[k][j];
+// 		            }
+// 		            temp3.mat[p][j] = num;
+// 		        }
+// 		    }
+// 		    m = temp3;
+// 		}
+// 	}
+
+// 	// Vector3f v(0, 0, 0);
+
+// 	// vector<vector<float>> M;
+// 	// M.assign(3, vector<float>(3,0));
+	
+// 	// for (int i=0; i<3; i++) M[i][i] = 0;
+// 	// M[0][0] = 1; M[0][1] = 1; M[0][2] = 1;
+// 	// M[1][0] = 0; M[1][1] = 1; M[1][2] = 1;
+// 	// M[2][0] = 0; M[2][1] = 0; M[2][2] = 1;
+
+// 	// vector<vector<float>> Minv = M;
+
+// 	Vector3f d(0, 0, 0);
+
+// 	Ray3f newRay;
+
+// 	Vector3f temp = ray.origin;
+// 	Vector3f temp2(m.mat[0][0]*temp.x + m.mat[0][1]*temp.y + m.mat[0][2]*temp.z + m.mat[0][3], m.mat[1][0]*temp.x + m.mat[1][1]*temp.y + m.mat[1][2]*temp.z + m.mat[1][3], m.mat[2][0]*temp.x + m.mat[2][1]*temp.y + m.mat[2][2]*temp.z + m.mat[2][3]);
+
+// 	temp = ray.direction;
+// 	Vector3f temp4(m.mat[0][0]*temp.x + m.mat[0][1]*temp.y + m.mat[0][2]*temp.z + m.mat[0][3], m.mat[1][0]*temp.x + m.mat[1][1]*temp.y + m.mat[1][2]*temp.z + m.mat[1][3], m.mat[2][0]*temp.x + m.mat[2][1]*temp.y + m.mat[2][2]*temp.z + m.mat[2][3]);
+	
+// 	temp4.normalize();
+// 	temp2 = temp2 + d;
+// 	newRay.createRay(temp2, temp4, true);
+
+// 	// ray = newRay;
+
+// 	//-------------------transformations:-----------
+
+// 	// parametric method
+// 	Vector3f line = (center - ray.origin);
+
+// 	float lineProjection = line.dot(ray.direction);
+// 	float dist2 = line.dot(line) - lineProjection*lineProjection;
+	
+// 	if(dist2>radius*radius) return false;
+	
+// 	float projection2 = sqrtf(radius*radius - dist2);
+// 	t0 = lineProjection-projection2;
+	
+// 	float t1 = lineProjection + projection2;
+// 	float temp_;
+// 	if(t0>=0){
+// 		temp_ = t0;
+// 		t0 = t1;
+// 	}else{
+// 		 return false;
+// 	} 
+
+// 	t1 = temp_;
+	
+// 	recentIntersectionPoint = ray.origin + ray.direction*t0;
+	
+// 	if((ray.origin).lengthFrom(this->center) < radius){
+// 		recentNormal = (this->center - recentIntersectionPoint).normalizeIt();	
+// 	}
+// 	else{
+// 		recentNormal = (recentIntersectionPoint - this->center).normalizeIt();
+// 	}
+
+// 	recentColor = getTexture(recentIntersectionPoint);
+// 	this->material.changeColor(recentColor);
+
+// 	//---------------transformations on Normal------------
+
+// 	Matrix newM = (m.inverse(m)).transpose();
+// 	temp = recentNormal;
+// 	Vector3f tempRec(newM.mat[0][0]*temp.x + newM.mat[0][1]*temp.y + newM.mat[0][2]*temp.z + newM.mat[0][3], newM.mat[1][0]*temp.x + newM.mat[1][1]*temp.y + newM.mat[1][2]*temp.z + newM.mat[1][3], newM.mat[2][0]*temp.x + newM.mat[2][1]*temp.y + newM.mat[2][2]*temp.z + newM.mat[2][3]);
+// 	recentNormal = tempRec;
+
+// 	return true;
 // }
